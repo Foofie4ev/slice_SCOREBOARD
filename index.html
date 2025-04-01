@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SLICE! Scoreboard</title>
+    <style>
+        body {
+            font-family: 'Arial Black', Impact, sans-serif;
+            text-align: center;
+            background: url('../PNGs/wood_texture.jpg') center center;
+            background-size: cover;
+            background-attachment: fixed;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        #scoreboard {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            flex-grow: 1;
+        }
+        .logo {
+            margin-bottom: 10px;
+            width: 100%;
+            max-width: 600px;
+        }
+        .logo img {
+            max-width: 65%;
+            height: auto;
+        }
+        .controls {
+            margin-bottom: 20px;
+            text-align: center;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .control-button {
+            background-color: #000000;
+            color: white;
+            padding: 10px 25px;
+            font-size: 1.4rem;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 3px 5px rgba(0,0,0,0.2);
+            transition: all 0.2s;
+        }
+        .control-button:hover {
+            background-color: #333333;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 8px rgba(0,0,0,0.2);
+        }
+        .control-button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 3px rgba(0,0,0,0.2);
+        }
+        .teams {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            margin-top: 10px;
+        }
+        .team {
+            margin: 10px 0;
+            text-align: center;
+        }
+        h2 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            text-shadow: -1px -1px 0 white, 1px -1px 0 white, -1px 1px 0 white, 1px 1px 0 white;
+        }
+        #green-team h2 {
+            color: #2e7d32; /* Green */
+        }
+        #orange-team h2 {
+            color: #ff5722; /* Orange */
+        }
+        .button-container {
+            position: relative;
+            width: 225px;
+            height: 225px;
+            margin: 0 auto;
+        }
+        .team-button {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            cursor: pointer;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            transition: transform 0.3s;
+        }
+        .team-button:hover {
+            transform: scale(1.05);
+        }
+        .team-button:active {
+            transform: scale(0.95);
+        }
+        .green-button {
+            background-image: url('../PNGs/lime_tennis_ball.png');
+        }
+        .orange-button {
+            background-image: url('../PNGs/orange_tennis_ball.png');
+        }
+        .score-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 4rem;
+            color: white;
+            text-shadow: -2px -2px 0 black, 2px -2px 0 black, -2px 2px 0 black, 2px 2px 0 black;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+        }
+        .game-score {
+            font-size: 2rem;
+            margin-top: 10px;
+            margin-bottom: 20px;
+            color: white;
+            text-shadow: -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black, 1px 1px 0 black;
+            padding: 5px 15px;
+            border-radius: 10px;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        .explanation {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.4rem;
+            color: #333;
+            text-shadow: -1px -1px 0 white, 1px -1px 0 white, -1px 1px 0 white, 1px 1px 0 white;
+            max-width: 80%;
+            line-height: 1.8;
+        }
+        .explanation-container {
+            position: relative;
+            width: 100%;
+            height: 200px;
+        }
+        
+        /* Game tracker section */
+        .game-tracker {
+            display: flex;
+            width: 100%;
+            justify-content: space-around;
+            margin-top: 10px;
+            margin-bottom: 20px;
+            background-color: rgba(255, 255, 255, 0.7);
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .game-count {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .game-count h3 {
+            margin: 0 0 5px 0;
+        }
+        .game-count-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+        }
+        .green-count {
+            color: #2e7d32;
+        }
+        .orange-count {
+            color: #ff5722;
+        }
+        
+        /* Landscape orientation */
+        @media (orientation: landscape) and (min-width: 600px) {
+            .teams {
+                flex-direction: row;
+                justify-content: space-around;
+            }
+            .team {
+                margin: 0 40px;
+            }
+        }
+        
+        /* Mobile-specific adjustments */
+        @media (max-width: 768px) {
+            .logo img {
+                max-width: 65%;
+            }
+            .button-container {
+                width: 175px; /* Increased for better tap target */
+                height: 175px;
+            }
+            h2 {
+                font-size: 2rem;
+            }
+            .score-text {
+                font-size: 3rem;
+            }
+            .game-score {
+                font-size: 1.6rem;
+            }
+            .explanation {
+                font-size: 1.2rem;
+                line-height: 1.6;
+            }
+            .control-button {
+                font-size: 1.2rem;
+                padding: 12px 20px; /* Increased padding for better tap target */
+            }
+            .game-count-value {
+                font-size: 2rem;
+            }
+        }
+        
+        /* Small phones */
+        @media (max-width: 380px) {
+            .button-container {
+                width: 150px;
+                height: 150px;
+            }
+            .control-button {
+                font-size: 1rem;
+                padding: 10px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="scoreboard">
+        <div class="logo">
+            <img src="../PNGs/slice_logo.png" alt="SLICE! Logo">
+        </div>
+        
+        <div class="game-tracker">
+            <div class="game-count">
+                <h3 style="color: #2e7d32;">Green Games</h3>
+                <div id="green-games" class="game-count-value green-count">0</div>
+            </div>
+            <div class="game-count">
+                <h3 style="color: #ff5722;">Orange Games</h3>
+                <div id="orange-games" class="game-count-value orange-count">0</div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button id="reset-point" class="control-button" onclick="resetPoints()">Reset Points</button>
+            <button id="reset-all" class="control-button" onclick="resetAll()">New Match</button>
+        </div>
+        
+        <div class="teams">
+            <div class="team" id="green-team">
+                <h2>Green Team</h2>
+                <div class="button-container">
+                    <div class="team-button green-button" onclick="incrementScore('green')"></div>
+                    <div id="green-score" class="score-text">❤️</div>
+                </div>
+            </div>
+            <div class="team" id="orange-team">
+                <h2>Orange Team</h2>
+                <div class="button-container">
+                    <div class="team-button orange-button" onclick="incrementScore('orange')"></div>
+                    <div id="orange-score" class="score-text">❤️</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="explanation-container">
+            <p class="explanation">
+                Tap your team's ball<br>
+                to add a point<br>
+                to your score
+            </p>
+        </div>
+    </div>
+    <script>
+        let greenPoints = 0;
+        let orangePoints = 0;
+        let greenGames = 0;
+        let orangeGames = 0;
+
+        function getTennisScore(points) {
+            if (points >= 4) return "GAME";
+            switch (points) {
+                case 0: return "❤️";
+                case 1: return "15";
+                case 2: return "30";
+                case 3: return "40";
+            }
+        }
+
+        function incrementScore(team) {
+            if (greenPoints >= 4 || orangePoints >= 4) return;
+            
+            if (team === 'green') {
+                greenPoints++;
+                document.getElementById('green-score').textContent = getTennisScore(greenPoints);
+                
+                // Check if game is won
+                if (greenPoints >= 4) {
+                    greenGames++;
+                    document.getElementById('green-games').textContent = greenGames;
+                    // Add animation or highlight for game win
+                    flashElement('green-games');
+                }
+            } else if (team === 'orange') {
+                orangePoints++;
+                document.getElementById('orange-score').textContent = getTennisScore(orangePoints);
+                
+                // Check if game is won
+                if (orangePoints >= 4) {
+                    orangeGames++;
+                    document.getElementById('orange-games').textContent = orangeGames;
+                    // Add animation or highlight for game win
+                    flashElement('orange-games');
+                }
+            }
+        }
+        
+        function flashElement(elementId) {
+            const element = document.getElementById(elementId);
+            element.style.transition = 'transform 0.3s ease-in-out';
+            element.style.transform = 'scale(1.5)';
+            
+            setTimeout(() => {
+                element.style.transform = 'scale(1)';
+            }, 500);
+        }
+
+        function resetPoints() {
+            greenPoints = 0;
+            orangePoints = 0;
+            document.getElementById('green-score').textContent = "❤️";
+            document.getElementById('orange-score').textContent = "❤️";
+        }
+        
+        function resetAll() {
+            resetPoints();
+            greenGames = 0;
+            orangeGames = 0;
+            document.getElementById('green-games').textContent = "0";
+            document.getElementById('orange-games').textContent = "0";
+        }
+    </script>
+</body>
+</html>
