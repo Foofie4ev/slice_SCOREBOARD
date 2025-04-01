@@ -1,2 +1,2 @@
 # slice_SCOREBOARD
-assets for the slice scorekeeping html app
+Code and assets for a scoreboard app for Slice The Tennis Card Game.
