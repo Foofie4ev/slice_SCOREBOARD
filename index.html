@@ -152,39 +152,38 @@
         }
         
         .game-tracker {
-            display: flex;
-            width: 90%;
-            max-width: 600px;
-            justify-content: space-around;
-            background-color: rgba(255, 255, 255, 0.7);
-            padding: 15px;
-            border-radius: 15px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            margin: 10px 0;
+            display: none; /* Hide the original game tracker */
         }
         
-        .game-count {
+        .team-game-count {
+            background-color: rgba(46, 125, 50, 0.5); /* Green transparent */
+            border-radius: 10px;
+            padding: 3px 8px;
+            margin-top: 5px;
             display: flex;
             flex-direction: column;
             align-items: center;
+            font-size: 0.9rem;
         }
         
-        .game-count h3 {
-            margin: 0 0 5px 0;
-            font-size: 1.5rem;
+        #orange-team .team-game-count {
+            background-color: rgba(255, 87, 34, 0.5); /* Orange transparent */
         }
         
-        .game-count-value {
-            font-size: 3.5rem;
+        .team-game-label {
+            font-size: 0.8rem;
             font-weight: bold;
+            color: white;
+            text-shadow: -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black, 1px 1px 0 black;
+            margin: 0;
         }
         
-        .green-count {
-            color: #2e7d32;
-        }
-        
-        .orange-count {
-            color: #ff5722;
+        .team-game-value {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: white;
+            text-shadow: -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black, 1px 1px 0 black;
+            margin: 0;
         }
         
         .instruction-text {
@@ -210,12 +209,16 @@
             }
             
             .button-container {
-                width: 160px;
-                height: 160px;
+                width: 180px;
+                height: 180px;
             }
             
-            .game-count-value {
-                font-size: 3rem;
+            .score-text {
+                font-size: 4rem;
+            }
+            
+            .team-game-value {
+                font-size: 1.4rem;
             }
         }
         
@@ -245,17 +248,6 @@
             <img src="https://raw.githubusercontent.com/Foofie4ev/slice_SCOREBOARD/main/slice_logo.png" alt="SLICE! Logo">
         </div>
         
-        <div class="game-tracker">
-            <div class="game-count">
-                <h3 style="color: #2e7d32;">Green Games</h3>
-                <div id="green-games" class="game-count-value green-count">0</div>
-            </div>
-            <div class="game-count">
-                <h3 style="color: #ff5722;">Orange Games</h3>
-                <div id="orange-games" class="game-count-value orange-count">0</div>
-            </div>
-        </div>
-        
         <div class="controls">
             <button id="reset-point" class="control-button" onclick="resetPoints()">Reset Points</button>
             <button id="reset-all" class="control-button" onclick="resetAll()">New Match</button>
@@ -268,6 +260,10 @@
                     <div class="team-button green-button" onclick="incrementScore('green')"></div>
                     <div id="green-score" class="score-text">❤️</div>
                 </div>
+                <div class="team-game-count">
+                    <div class="team-game-label">Games</div>
+                    <div id="green-games" class="team-game-value">0</div>
+                </div>
             </div>
             
             <div class="team" id="orange-team">
@@ -275,6 +271,10 @@
                 <div class="button-container">
                     <div class="team-button orange-button" onclick="incrementScore('orange')"></div>
                     <div id="orange-score" class="score-text">❤️</div>
+                </div>
+                <div class="team-game-count">
+                    <div class="team-game-label">Games</div>
+                    <div id="orange-games" class="team-game-value">0</div>
                 </div>
             </div>
         </div>
