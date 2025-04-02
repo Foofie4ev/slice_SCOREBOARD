@@ -2,7 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <title>SLICE! Scoreboard</title>
     <style>
         html, body {
@@ -80,14 +82,14 @@
             left: 50%;
             transform: translateX(-50%);
             width: 100%;
-            max-width: 250px;
+            max-width: 625px; /* 2.5x larger than before (was 250px) */
             z-index: 10;
         }
         
         .logo img {
             max-width: 100%;
             height: auto;
-            max-height: 15vh;
+            max-height: 37.5vh; /* 2.5x larger than before (was 15vh) */
         }
         
         .controls {
@@ -254,7 +256,7 @@
         
         @media (orientation: landscape) and (max-height: 500px) {
             .logo img {
-                max-height: 12vh;
+                max-height: 30vh; /* Increased but still proportional for small screens */
             }
             
             .button-container {
@@ -367,17 +369,57 @@
         let greenGames = 0;
         let orangeGames = 0;
         
-        // Force fullscreen on load
-        window.addEventListener('load', function() {
-            // Hide address bar by scrolling slightly
-            setTimeout(function() {
+        // Function to hide URL bar
+        function hideURLbar() {
+            if (window.location.hash.indexOf('#') == -1) {
+                // First try using scrollTo
                 window.scrollTo(0, 1);
-            }, 100);
+                
+                // Then try using minimal-ui for iOS
+                if (navigator.userAgent.match(/(iPad|iPhone|iPod)/g)) {
+                    document.documentElement.style.webkitAppearance = 'none';
+                    document.body.style.webkitAppearance = 'none';
+                }
+                
+                // Also set minimal-ui meta viewport for iOS
+                let metaViewport = document.querySelector('meta[name=viewport]');
+                if (metaViewport) {
+                    if (!metaViewport.content.includes('minimal-ui')) {
+                        metaViewport.content += ', minimal-ui';
+                    }
+                }
+                
+                // For some browsers, attempt to go fullscreen
+                if (document.documentElement.requestFullscreen) {
+                    document.documentElement.requestFullscreen();
+                } else if (document.documentElement.webkitRequestFullscreen) {
+                    document.documentElement.webkitRequestFullscreen();
+                } else if (document.documentElement.msRequestFullscreen) {
+                    document.documentElement.msRequestFullscreen();
+                }
+            }
+        }
+        
+        // Call hideURLbar function after page load
+        window.addEventListener('load', function() {
+            // Call hideURLbar after a slight delay
+            setTimeout(hideURLbar, 100);
             
+            // Check orientation
             checkOrientation();
         });
         
+        // Call hideURLbar again after any orientation change
+        window.addEventListener('orientationchange', function() {
+            setTimeout(hideURLbar, 100);
+        });
+        
         window.addEventListener('resize', checkOrientation);
+        
+        // Try to do it on user interaction too (more likely to be allowed by browsers)
+        document.addEventListener('click', function() {
+            setTimeout(hideURLbar, 100);
+        });
         
         function checkOrientation() {
             const rotateMessage = document.getElementById('rotate-message');
@@ -385,10 +427,8 @@
                 rotateMessage.style.display = 'flex';
             } else {
                 rotateMessage.style.display = 'none';
-                // Hide address bar again on orientation change
-                setTimeout(function() {
-                    window.scrollTo(0, 1);
-                }, 100);
+                // Hide URL bar again on orientation change
+                setTimeout(hideURLbar, 100);
             }
         }
 
@@ -425,6 +465,9 @@
                     document.getElementById('orange-games').textContent = orangeGames;
                 }
             }
+            
+            // Try to hide URL bar after score change
+            setTimeout(hideURLbar, 100);
         }
 
         function resetPoints() {
@@ -432,6 +475,9 @@
             orangePoints = 0;
             document.getElementById('green-score').textContent = "❤️";
             document.getElementById('orange-score').textContent = "❤️";
+            
+            // Try to hide URL bar after reset
+            setTimeout(hideURLbar, 100);
         }
         
         function resetAll() {
@@ -440,6 +486,9 @@
             orangeGames = 0;
             document.getElementById('green-games').textContent = "0";
             document.getElementById('orange-games').textContent = "0";
+            
+            // Try to hide URL bar after reset
+            setTimeout(hideURLbar, 100);
         }
     </script>
 </body>
