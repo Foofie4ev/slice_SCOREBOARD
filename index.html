@@ -1,49 +1,8 @@
-/* Small screens in landscape mode */
-        @media (orientation: landscape) and (max-height: 500px) {
-            .logo img {
-                max-height: 12vh;
-            }
-            
-            .button-container {
-                width: 120px;
-                height: 120px;
-            }
-            
-            .score-text {
-                font-size: 3rem;
-            }
-            
-            h2 {
-                font-size: 1.8rem;
-                margin-bottom: 5px;
-            }
-            
-            .control-button {
-                padding: 5px 15px;
-                font-size: 0.9rem;
-            }
-            
-            .team-game-count {
-                padding: 2px 5px;
-            }
-            
-            .team-game-label {
-                font-size: 0.7rem;
-            }
-            
-            .team-game-value {
-                font-size: 1.2rem;
-            }
-            
-            .instruction-text {
-                font-size: 0.8rem;
-                padding: 3px 10px;
-            }
-        }<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>SLICE! Scoreboard</title>
     <style>
         html, body {
@@ -105,6 +64,16 @@
             overflow: hidden;
         }
         
+        .teams-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
         .logo {
             position: absolute;
             top: 5%;
@@ -145,20 +114,10 @@
             box-shadow: 0 3px 5px rgba(0,0,0,0.2);
         }
         
-        .teams-container {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-        
         .teams {
             display: flex;
-            flex-direction: column;
-            align-items: center;
+            flex-direction: row;
+            justify-content: space-around;
             width: 100%;
             margin: 0;
         }
@@ -172,22 +131,20 @@
             font-size: 2.5rem;
             margin: 0 0 15px 0;
             text-shadow: -1px -1px 0 white, 1px -1px 0 white, -1px 1px 0 white, 1px 1px 0 white;
-            position: relative;
-            top: 0;
         }
         
         #green-team h2 {
-            color: #2e7d32; /* Green */
+            color: #2e7d32;
         }
         
         #orange-team h2 {
-            color: #ff5722; /* Orange */
+            color: #ff5722;
         }
         
         .button-container {
             position: relative;
-            width: 200px;
-            height: 200px;
+            width: 180px;
+            height: 180px;
             margin: 0 auto;
         }
         
@@ -225,12 +182,8 @@
             height: 100%;
         }
         
-        .game-tracker {
-            display: none; /* Hide the original game tracker */
-        }
-        
         .team-game-count {
-            background-color: rgba(46, 125, 50, 0.5); /* Green transparent */
+            background-color: rgba(46, 125, 50, 0.5);
             border-radius: 10px;
             padding: 3px 8px;
             margin-top: 5px;
@@ -241,7 +194,7 @@
         }
         
         #orange-team .team-game-count {
-            background-color: rgba(255, 87, 34, 0.5); /* Orange transparent */
+            background-color: rgba(255, 87, 34, 0.5);
         }
         
         .team-game-label {
@@ -269,18 +222,17 @@
             padding: 5px 15px;
             background-color: rgba(0,0,0,0.5);
             border-radius: 10px;
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
         }
         
-        /* Landscape Layout */
         @media (orientation: landscape) {
             .teams {
-                flex-direction: row;
-                justify-content: space-around;
-                padding: 0;
-                align-items: center;
-                margin-top: 0;
                 position: absolute;
-                top: 43%; 
+                top: 43%;
                 left: 0;
                 right: 0;
                 transform: translateY(-50%);
@@ -288,7 +240,6 @@
             
             .team {
                 margin: 0 30px;
-                position: relative;
             }
             
             .button-container {
@@ -299,44 +250,62 @@
             .score-text {
                 font-size: min(4rem, 7vw);
             }
+        }
+        
+        @media (orientation: landscape) and (max-height: 500px) {
+            .logo img {
+                max-height: 12vh;
+            }
             
-            .team-game-value {
-                font-size: min(1.4rem, 3vw);
+            .button-container {
+                width: 120px;
+                height: 120px;
+            }
+            
+            .score-text {
+                font-size: 3rem;
             }
             
             h2 {
-                font-size: min(2.5rem, 5vw);
-                margin: 0 0 min(15px, 3vh) 0;
-                text-shadow: -1px -1px 0 white, 1px -1px 0 white, -1px 1px 0 white, 1px 1px 0 white;
-                position: relative;
+                font-size: 1.8rem;
+                margin-bottom: 5px;
             }
             
-            .controls {
-                top: 50%;
-                transform: translate(-50%, -50%);
+            .control-button {
+                padding: 5px 15px;
+                font-size: 0.9rem;
+            }
+            
+            .team-game-count {
+                padding: 2px 5px;
+            }
+            
+            .team-game-label {
+                font-size: 0.7rem;
+            }
+            
+            .team-game-value {
+                font-size: 1.2rem;
             }
             
             .instruction-text {
-                position: absolute;
-                bottom: 2vh;
-                left: 50%;
-                transform: translateX(-50%);
-                width: 80%;
-                font-size: min(1.2rem, 2.5vh);
-                margin: 0;
-                padding: min(5px, 1vh) min(15px, 2vw);
+                font-size: 0.8rem;
+                padding: 3px 10px;
             }
         }
         
-        /* Mobile adjustments */
-        @media (max-width: 768px) {
-            .control-button {
-                font-size: 1.2rem;
-                padding: 8px 16px;
+        @media (orientation: portrait) {
+            .teams {
+                flex-direction: column;
+                align-items: center;
             }
             
-            h2 {
-                font-size: 2rem;
+            .team {
+                margin: 15px 0;
+            }
+            
+            #rotate-message {
+                display: flex;
             }
         }
     </style>
