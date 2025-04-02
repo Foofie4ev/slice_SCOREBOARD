@@ -66,21 +66,36 @@
         
         .controls {
             display: flex;
+            flex-direction: column;
             justify-content: center;
-            gap: 15px;
-            margin: 15px 0;
-            flex-wrap: wrap;
+            gap: 10px;
+            margin: 0;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
         }
         
         .control-button {
             background-color: #000000;
             color: white;
-            padding: 10px 25px;
-            font-size: 1.4rem;
+            padding: 8px 16px;
+            font-size: 1.1rem;
             border: none;
             border-radius: 25px;
             cursor: pointer;
             box-shadow: 0 3px 5px rgba(0,0,0,0.2);
+        }
+        
+        .teams-container {
+            position: relative;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex-grow: 1;
+            min-height: 400px;
         }
         
         .teams {
@@ -88,7 +103,7 @@
             flex-direction: column;
             align-items: center;
             width: 100%;
-            margin: 10px 0;
+            margin: 0;
         }
         
         .team {
@@ -100,6 +115,8 @@
             font-size: 2.5rem;
             margin: 0 0 15px 0;
             text-shadow: -1px -1px 0 white, 1px -1px 0 white, -1px 1px 0 white, 1px 1px 0 white;
+            position: relative;
+            top: 0;
         }
         
         #green-team h2 {
@@ -164,6 +181,10 @@
             flex-direction: column;
             align-items: center;
             font-size: 0.9rem;
+            position: absolute;
+            bottom: -50px;
+            left: 0;
+            right: 0;
         }
         
         #orange-team .team-game-count {
@@ -202,6 +223,14 @@
             .teams {
                 flex-direction: row;
                 justify-content: space-around;
+                padding: 0;
+                align-items: center;
+                margin-top: 0;
+                position: absolute;
+                top: 35%;
+                left: 0;
+                right: 0;
+                transform: translateY(-50%);
             }
             
             .team {
@@ -219,6 +248,35 @@
             
             .team-game-value {
                 font-size: 1.4rem;
+            }
+            
+            .logo {
+                margin-bottom: 0;
+                position: absolute;
+                top: 5%;
+                left: 50%;
+                transform: translateX(-50%);
+            }
+            
+            .instruction-text {
+                position: absolute;
+                bottom: 10px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 80%;
+            }
+            
+            .controls {
+                top: 75%;
+                transform: translate(-50%, 0%);
+            }
+            
+            h2 {
+                position: absolute;
+                top: -60px;
+                left: 0;
+                right: 0;
+                text-align: center;
             }
         }
         
@@ -248,39 +306,41 @@
             <img src="https://raw.githubusercontent.com/Foofie4ev/slice_SCOREBOARD/main/slice_logo.png" alt="SLICE! Logo">
         </div>
         
-        <div class="controls">
-            <button id="reset-point" class="control-button" onclick="resetPoints()">Reset Points</button>
-            <button id="reset-all" class="control-button" onclick="resetAll()">New Match</button>
-        </div>
-        
-        <div class="teams">
-            <div class="team" id="green-team">
-                <h2>Green Team</h2>
-                <div class="button-container">
-                    <div class="team-button green-button" onclick="incrementScore('green')"></div>
-                    <div id="green-score" class="score-text">❤️</div>
+        <div class="teams-container">
+            <div class="teams">
+                <div class="team" id="green-team">
+                    <h2>Green Team</h2>
+                    <div class="button-container">
+                        <div class="team-button green-button" onclick="incrementScore('green')"></div>
+                        <div id="green-score" class="score-text">❤️</div>
+                    </div>
+                    <div class="team-game-count">
+                        <div class="team-game-label">Games</div>
+                        <div id="green-games" class="team-game-value">0</div>
+                    </div>
                 </div>
-                <div class="team-game-count">
-                    <div class="team-game-label">Games</div>
-                    <div id="green-games" class="team-game-value">0</div>
+                
+                <div class="team" id="orange-team">
+                    <h2>Orange Team</h2>
+                    <div class="button-container">
+                        <div class="team-button orange-button" onclick="incrementScore('orange')"></div>
+                        <div id="orange-score" class="score-text">❤️</div>
+                    </div>
+                    <div class="team-game-count">
+                        <div class="team-game-label">Games</div>
+                        <div id="orange-games" class="team-game-value">0</div>
+                    </div>
                 </div>
             </div>
             
-            <div class="team" id="orange-team">
-                <h2>Orange Team</h2>
-                <div class="button-container">
-                    <div class="team-button orange-button" onclick="incrementScore('orange')"></div>
-                    <div id="orange-score" class="score-text">❤️</div>
-                </div>
-                <div class="team-game-count">
-                    <div class="team-game-label">Games</div>
-                    <div id="orange-games" class="team-game-value">0</div>
-                </div>
+            <div class="controls">
+                <button id="reset-point" class="control-button" onclick="resetPoints()">Reset Points</button>
+                <button id="reset-all" class="control-button" onclick="resetAll()">New Match</button>
             </div>
-        </div>
-        
-        <div class="instruction-text">
-            Tap your team's ball to add a point to your score
+            
+            <div class="instruction-text">
+                Tap your team's ball to add a point to your score
+            </div>
         </div>
     </div>
     
