@@ -2,106 +2,165 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <title>SLICE! Scoreboard</title>
     <style>
+        html, body {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        
         body {
             font-family: 'Arial Black', Impact, sans-serif;
             text-align: center;
-            background: url('../PNGs/wood_texture.jpg') center center;
+            background: url('https://raw.githubusercontent.com/Foofie4ev/slice_SCOREBOARD/main/wood_texture.png') center center;
             background-size: cover;
-            background-attachment: fixed;
-            margin: 0;
-            padding: 0;
             color: #333;
-            min-height: 100vh;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
-            transition: background-image 0.5s ease;
+            align-items: center;
+            justify-content: center;
         }
+        
+        #rotate-message {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            color: white;
+        }
+        
+        #rotate-message img {
+            width: 150px;
+            height: auto;
+            margin-bottom: 20px;
+            animation: rotate 2s infinite;
+        }
+        
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            25% { transform: rotate(-90deg); }
+            75% { transform: rotate(-90deg); }
+            100% { transform: rotate(0deg); }
+        }
+        
         #scoreboard {
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 20px;
-            flex-grow: 1;
+            width: 100%;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
         }
+        
+        .teams-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
         .logo {
-            margin-bottom: 10px;
+            position: absolute;
+            top: 5%;
+            left: 50%;
+            transform: translateX(-50%);
             width: 100%;
-            max-width: 600px;
+            max-width: 625px; /* 2.5x larger than before (was 250px) */
+            z-index: 10;
         }
+        
         .logo img {
-            max-width: 65%;
+            max-width: 100%;
             height: auto;
+            max-height: 37.5vh; /* 2.5x larger than before (was 15vh) */
         }
+        
         .controls {
-            margin-bottom: 20px;
-            text-align: center;
-            width: 100%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
         }
-        #reset {
+        
+        .reset-points-button {
             background-color: #000000;
             color: white;
-            padding: 10px 25px;
-            font-size: 1.4rem;
+            padding: 8px 16px;
+            font-size: 1.1rem;
             border: none;
             border-radius: 25px;
             cursor: pointer;
             box-shadow: 0 3px 5px rgba(0,0,0,0.2);
-            transition: all 0.2s;
+            margin-bottom: 10px;
         }
-        #reset:hover {
-            background-color: #333333;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 8px rgba(0,0,0,0.2);
+        
+        .new-match-button {
+            background-color: white;
+            color: black;
+            padding: 8px 16px;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 3px 5px rgba(0,0,0,0.2);
+            position: absolute;
+            bottom: 120px; /* Moved up from 60px - halfway between center and bottom */
+            left: 50%;
+            transform: translateX(-50%);
         }
-        #reset:active {
-            transform: translateY(0);
-            box-shadow: 0 2px 3px rgba(0,0,0,0.2);
-        }
+        
         .teams {
             display: flex;
-            flex-direction: column;
-            align-items: center;
+            flex-direction: row;
+            justify-content: space-around;
             width: 100%;
-            margin-top: 10px;
+            margin: 0;
         }
+        
         .team {
             margin: 10px 0;
             text-align: center;
         }
+        
         h2 {
             font-size: 2.5rem;
-            margin-bottom: 15px;
+            margin: 0 0 15px 0;
             text-shadow: -1px -1px 0 white, 1px -1px 0 white, -1px 1px 0 white, 1px 1px 0 white;
         }
+        
         #green-team h2 {
-            color: #2e7d32; /* Green */
+            color: #2e7d32;
         }
+        
         #orange-team h2 {
-            color: #ff5722; /* Orange */
+            color: #ff5722;
         }
-        .player-name {
-            font-size: 1.8rem;
-            margin-top: -10px;
-            margin-bottom: 15px;
-            font-weight: bold;
-            text-shadow: -1px -1px 0 white, 1px -1px 0 white, -1px 1px 0 white, 1px 1px 0 white;
-        }
-        #green-player {
-            color: #2e7d32; /* Green */
-        }
-        #orange-player {
-            color: #ff5722; /* Orange */
-        }
+        
         .button-container {
             position: relative;
-            width: 225px; /* Increased from prior version */
-            height: 225px;
+            width: 180px;
+            height: 180px;
             margin: 0 auto;
         }
+        
         .team-button {
             width: 100%;
             height: 100%;
@@ -110,20 +169,16 @@
             background-size: contain;
             background-repeat: no-repeat;
             background-position: center;
-            transition: transform 0.3s;
         }
-        .team-button:hover {
-            transform: scale(1.05);
-        }
-        .team-button:active {
-            transform: scale(0.95);
-        }
+        
         .green-button {
-            background-image: url('https://raw.githubusercontent.com/Foofie4ev/slice_SCOREBOARD/refs/heads/main/lime_tennis_ball.png');
+            background-image: url('https://raw.githubusercontent.com/Foofie4ev/slice_SCOREBOARD/main/lime_tennis_ball.png');
         }
+        
         .orange-button {
-            background-image: url('https://raw.githubusercontent.com/Foofie4ev/slice_SCOREBOARD/refs/heads/main/orange_tennis_ball.png');
+            background-image: url('https://raw.githubusercontent.com/Foofie4ev/slice_SCOREBOARD/main/orange_tennis_ball.png');
         }
+        
         .score-text {
             position: absolute;
             top: 50%;
@@ -139,462 +194,258 @@
             width: 100%;
             height: 100%;
         }
-        .explanation {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 1.4rem;
-            color: #333;
-            text-shadow: -1px -1px 0 white, 1px -1px 0 white, -1px 1px 0 white, 1px 1px 0 white;
-            max-width: 80%;
-            line-height: 1.8;
-        }
-        .explanation-container {
-            position: relative;
-            width: 100%;
-            height: 200px;
-        }
-        /* Modal Styles */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            overflow: auto;
-        }
-        .modal-content {
-            background-color: #fefefe;
-            margin: 10% auto;
-            padding: 30px;
-            border: 1px solid #888;
-            width: 80%;
-            max-width: 500px;
-            border-radius: 15px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            text-align: center;
-        }
-        .modal-title {
-            font-size: 2rem;
-            margin-bottom: 20px;
-            color: #333;
-        }
-        .input-group {
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        .input-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-            font-size: 1.2rem;
-        }
-        .input-group input {
-            width: 100%;
-            padding: 12px;
-            font-size: 1.2rem;
-            border-radius: 8px;
-            border: 1px solid #ccc;
-            text-align: center;
-            box-sizing: border-box;
-        }
-        .modal-button {
-            background-color: #000000;
-            color: white;
-            padding: 10px 30px;
-            font-size: 1.2rem;
-            border: none;
-            border-radius: 25px;
-            cursor: pointer;
-            margin-top: 20px;
-            transition: all 0.2s;
-        }
-        .modal-button:hover {
-            background-color: #333333;
-            transform: translateY(-2px);
-            box-shadow: 0 3px 5px rgba(0,0,0,0.2);
-        }
-        .modal-button:active {
-            transform: translateY(0);
-            box-shadow: 0 2px 3px rgba(0,0,0,0.2);
-        }
-        .court-selection {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            grid-template-rows: repeat(2, auto);
-            gap: 15px;
-            margin-top: 20px;
-            max-width: 400px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        .court-option {
-            width: 120px;
-            height: 90px;
-            border: 3px solid transparent;
-            border-radius: 8px;
-            cursor: pointer;
-            background-size: cover;
-            background-position: center;
-            transition: all 0.2s;
-            position: relative;
-            overflow: hidden;
-        }
-        .court-option:hover {
-            transform: scale(1.05);
-        }
-        .court-option.selected {
-            border-color: #ff5722;
-            box-shadow: 0 0 10px rgba(255, 87, 34, 0.7);
-        }
-        .court-name {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            color: white;
-            background-color: rgba(0, 0, 0, 0.7);
-            padding: 4px 0;
-            font-weight: bold;
-            display: flex;
-            flex-direction: column;
-            line-height: 1.2;
-            height: 40px; /* Fixed height for all court names */
-            justify-content: center; /* Center content vertically */
-        }
-        .court-prefix {
-            font-size: 0.8rem;
-        }
-        .court-main-name {
-            font-size: 0.9rem;
-        }
-        .court-name-display {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: rgba(0, 0, 0, 0.7);
-            color: white;
-            padding: 8px 20px;
-            border-radius: 25px;
-            font-weight: bold;
-            z-index: 100;
+        
+        .team-game-count {
+            background-color: rgba(46, 125, 50, 0.5);
+            border-radius: 10px;
+            padding: 3px 8px;
+            margin-top: 5px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            line-height: 1.2;
+            font-size: 0.9rem;
         }
-        .court-name-display .court-prefix {
-            font-size: 1rem;
+        
+        #orange-team .team-game-count {
+            background-color: rgba(255, 87, 34, 0.5);
         }
-        .court-name-display .court-main-name {
+        
+        .team-game-label {
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: white;
+            text-shadow: -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black, 1px 1px 0 black;
+            margin: 0;
+        }
+        
+        .team-game-value {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: white;
+            text-shadow: -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black, 1px 1px 0 black;
+            margin: 0;
+        }
+        
+        .instruction-text {
             font-size: 1.2rem;
+            color: white;
+            text-shadow: -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black, 1px 1px 0 black;
+            margin: 15px 0;
+            text-align: center;
+            padding: 5px 15px;
+            background-color: rgba(0,0,0,0.5);
+            border-radius: 10px;
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
         }
-        @media (orientation: landscape) and (min-width: 600px) {
+        
+        @media (orientation: landscape) {
             .teams {
-                flex-direction: row;
-                justify-content: space-around;
+                position: absolute;
+                top: 43%;
+                left: 0;
+                right: 0;
+                transform: translateY(-50%);
             }
+            
             .team {
-                margin: 0 40px;
+                margin: 0 30px;
+            }
+            
+            .button-container {
+                width: min(180px, 25vw);
+                height: min(180px, 25vw);
+            }
+            
+            .score-text {
+                font-size: min(4rem, 7vw);
             }
         }
         
-        /* Mobile-specific adjustments */
-        @media (max-width: 768px) {
+        @media (orientation: landscape) and (max-height: 500px) {
             .logo img {
-                max-width: 65%;
+                max-height: 30vh; /* Increased but still proportional for small screens */
             }
+            
             .button-container {
-                width: 150px;
-                height: 150px;
+                width: 120px;
+                height: 120px;
             }
-            h2 {
-                font-size: 2rem;
-            }
-            .player-name {
-                font-size: 1.5rem;
-            }
+            
             .score-text {
                 font-size: 3rem;
             }
-            .explanation {
-                font-size: 1.2rem;
-                line-height: 1.6;
+            
+            h2 {
+                font-size: 1.8rem;
+                margin-bottom: 5px;
             }
-            #reset {
-                font-size: 1.2rem;
-                padding: 8px 20px;
+            
+            .reset-points-button, .new-match-button {
+                padding: 5px 15px;
+                font-size: 0.9rem;
             }
-            .court-option {
-                width: 100px;
-                height: 75px;
+            
+            .new-match-button {
+                bottom: 80px; /* Adjusted for small screens */
             }
-            .court-name {
+            
+            .team-game-count {
+                padding: 2px 5px;
+            }
+            
+            .team-game-label {
                 font-size: 0.7rem;
             }
-            .modal-content {
-                padding: 20px;
-                margin: 15% auto;
+            
+            .team-game-value {
+                font-size: 1.2rem;
             }
-            .modal-title {
-                font-size: 1.7rem;
+            
+            .instruction-text {
+                font-size: 0.8rem;
+                padding: 3px 10px;
+            }
+        }
+        
+        @media (orientation: portrait) {
+            .teams {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .team {
+                margin: 15px 0;
+            }
+            
+            #rotate-message {
+                display: flex;
             }
         }
     </style>
 </head>
 <body>
+    <!-- Rotation Message for Portrait Mode -->
+    <div id="rotate-message">
+        <img src="https://raw.githubusercontent.com/Foofie4ev/slice_SCOREBOARD/main/slice_logo.png" alt="SLICE! Logo">
+        <h2>Please Rotate Your Device</h2>
+        <p>For the best experience, use landscape mode</p>
+    </div>
+    
     <div id="scoreboard">
         <div class="logo">
-            <img src="https://raw.githubusercontent.com/Foofie4ev/slice_SCOREBOARD/refs/heads/main/slice_logo.png" alt="SLICE! Logo">
+            <img src="https://raw.githubusercontent.com/Foofie4ev/slice_SCOREBOARD/main/slice_logo.png" alt="SLICE! Logo">
         </div>
         
-        <div class="controls">
-            <button id="reset" onclick="openNameModal()">New Game</button>
-        </div>
-        
-        <div class="teams">
-            <div class="team" id="green-team">
-                <h2>Green Team</h2>
-                <div class="player-name" id="green-player">Player 1</div>
-                <div class="button-container">
-                    <div class="team-button green-button" onclick="incrementScore('green')"></div>
-                    <div id="green-score" class="score-text">❤️</div>
+        <div class="teams-container">
+            <div class="teams">
+                <div class="team" id="green-team">
+                    <h2>Green Team</h2>
+                    <div class="button-container">
+                        <div class="team-button green-button" onclick="incrementScore('green')"></div>
+                        <div id="green-score" class="score-text">❤️</div>
+                    </div>
+                    <div class="team-game-count">
+                        <div class="team-game-label">Games</div>
+                        <div id="green-games" class="team-game-value">0</div>
+                    </div>
+                </div>
+                
+                <div class="team" id="orange-team">
+                    <h2>Orange Team</h2>
+                    <div class="button-container">
+                        <div class="team-button orange-button" onclick="incrementScore('orange')"></div>
+                        <div id="orange-score" class="score-text">❤️</div>
+                    </div>
+                    <div class="team-game-count">
+                        <div class="team-game-label">Games</div>
+                        <div id="orange-games" class="team-game-value">0</div>
+                    </div>
                 </div>
             </div>
-            <div class="team" id="orange-team">
-                <h2>Orange Team</h2>
-                <div class="player-name" id="orange-player">Player 2</div>
-                <div class="button-container">
-                    <div class="team-button orange-button" onclick="incrementScore('orange')"></div>
-                    <div id="orange-score" class="score-text">❤️</div>
-                </div>
+            
+            <div class="controls">
+                <button id="reset-point" class="reset-points-button" onclick="resetPoints()">Reset Points</button>
             </div>
-        </div>
-        
-        <div class="explanation-container">
-            <p class="explanation">
-                Tap your team's ball<br>
-                to add a point<br>
-                to your score
-            </p>
+            
+            <button id="reset-all" class="new-match-button" onclick="resetAll()">New Match</button>
+            
+            <div class="instruction-text">
+                Tap your team's ball to add a point to your score
+            </div>
         </div>
     </div>
     
-    <!-- Court name display -->
-    <div class="court-name-display" id="court-name-display">
-        <span class="court-prefix">The</span>
-        <span class="court-main-name">Cutting Board</span>
-    </div>
-
-    <!-- Name Modal -->
-    <div id="name-modal" class="modal">
-        <div class="modal-content">
-            <h2 class="modal-title">Enter Player Names</h2>
-            
-            <div class="input-group">
-                <label for="green-player-name">Green Team Player:</label>
-                <input type="text" id="green-player-name" placeholder="Enter player name">
-            </div>
-            
-            <div class="input-group">
-                <label for="orange-player-name">Orange Team Player:</label>
-                <input type="text" id="orange-player-name" placeholder="Enter player name">
-            </div>
-            
-            <button class="modal-button" onclick="savePlayers()">Continue</button>
-        </div>
-    </div>
-
-    <!-- Court Selection Modal -->
-    <div id="court-modal" class="modal">
-        <div class="modal-content">
-            <h2 class="modal-title">Choose a Court</h2>
-            
-            <div class="court-selection">
-                <div class="court-option selected" data-court="1" data-name="The Cutting Board" style="background-image: url('https://raw.githubusercontent.com/Foofie4ev/slice_SCOREBOARD/refs/heads/main/cutting_board.png');">
-                    <div class="court-name">
-                        <span class="court-prefix">The</span>
-                        <span class="court-main-name">Cutting Board</span>
-                    </div>
-                </div>
-                <div class="court-option" data-court="2" data-name="The Orchard" style="background-image: url('https://raw.githubusercontent.com/Foofie4ev/slice_SCOREBOARD/refs/heads/main/the_orchard.png');">
-                    <div class="court-name">
-                        <span class="court-prefix">The</span>
-                        <span class="court-main-name">Orchard</span>
-                    </div>
-                </div>
-                <div class="court-option" data-court="3" data-name="The Secret Garden" style="background-image: url('https://raw.githubusercontent.com/Foofie4ev/slice_SCOREBOARD/refs/heads/main/secret_garden.png');">
-                    <div class="court-name">
-                        <span class="court-prefix">The</span>
-                        <span class="court-main-name">Secret Garden</span>
-                    </div>
-                </div>
-                <div class="court-option" data-court="4" data-name="The Farmer's Market" style="background-image: url('https://raw.githubusercontent.com/Foofie4ev/slice_SCOREBOARD/refs/heads/main/farmers_market.png');">
-                    <div class="court-name">
-                        <span class="court-prefix">The</span>
-                        <span class="court-main-name">Farmer's Market</span>
-                    </div>
-                </div>
-                <div class="court-option" data-court="5" data-name="The Greenhouse" style="background-image: url('https://raw.githubusercontent.com/Foofie4ev/slice_SCOREBOARD/refs/heads/main/green_house.png');">
-                    <div class="court-name">
-                        <span class="court-prefix">The</span>
-                        <span class="court-main-name">Greenhouse</span>
-                    </div>
-                </div>
-                <div class="court-option" data-court="6" data-name="The Veggie Garden" style="background-image: url('https://raw.githubusercontent.com/Foofie4ev/slice_SCOREBOARD/refs/heads/main/veggie_garden.png');">
-                    <div class="court-name">
-                        <span class="court-prefix">The</span>
-                        <span class="court-main-name">Veggie Garden</span>
-                    </div>
-                </div>
-            </div>
-            
-            <button class="modal-button" onclick="startGame()">Start Game</button>
-        </div>
-    </div>
-
     <script>
         let greenPoints = 0;
         let orangePoints = 0;
-        let selectedCourt = 1;
-        let selectedCourtName = "The Cutting Board";
-
-        // Show the name modal when the page loads
-        window.onload = function() {
-            openNameModal();
-            
-            // Set the default court (The Cutting Board) as the initial background
-            document.body.style.backgroundImage = "url('https://raw.githubusercontent.com/Foofie4ev/slice_SCOREBOARD/refs/heads/main/cutting_board.png')";
-        };
-
-        function openNameModal() {
-            document.getElementById('name-modal').style.display = 'block';
-            // Reset scores when opening the modal
-            resetScores();
-        }
-
-        function closeNameModal() {
-            document.getElementById('name-modal').style.display = 'none';
-        }
-
-        function openCourtModal() {
-            closeNameModal();
-            document.getElementById('court-modal').style.display = 'block';
-        }
-
-        function closeCourtModal() {
-            document.getElementById('court-modal').style.display = 'none';
-        }
-
-        function savePlayers() {
-            // Get player names from input fields
-            const greenPlayerName = document.getElementById('green-player-name').value.trim() || "Player 1";
-            const orangePlayerName = document.getElementById('orange-player-name').value.trim() || "Player 2";
-            
-            // Update player name displays
-            document.getElementById('green-player').textContent = greenPlayerName;
-            document.getElementById('orange-player').textContent = orangePlayerName;
-            
-            // Proceed to court selection
-            openCourtModal();
-        }
-
-        function selectCourt(courtNumber, courtName) {
-            // Remove selected class from all court options
-            document.querySelectorAll('.court-option').forEach(court => {
-                court.classList.remove('selected');
-            });
-            
-            // Add selected class to the clicked court
-            document.querySelector(`.court-option[data-court="${courtNumber}"]`).classList.add('selected');
-            
-            selectedCourt = courtNumber;
-            selectedCourtName = courtName;
-            
-            // Get the correct background image URL based on court number
-            let backgroundUrl = '';
-            switch(courtNumber) {
-                case '1':
-                    backgroundUrl = 'https://raw.githubusercontent.com/Foofie4ev/slice_SCOREBOARD/refs/heads/main/cutting_board.png';
-                    break;
-                case '2':
-                    backgroundUrl = 'https://raw.githubusercontent.com/Foofie4ev/slice_SCOREBOARD/refs/heads/main/the_orchard.png';
-                    break;
-                case '3':
-                    backgroundUrl = 'https://raw.githubusercontent.com/Foofie4ev/slice_SCOREBOARD/refs/heads/main/secret_garden.png';
-                    break;
-                case '4':
-                    backgroundUrl = 'https://raw.githubusercontent.com/Foofie4ev/slice_SCOREBOARD/refs/heads/main/farmers_market.png';
-                    break;
-                case '5':
-                    backgroundUrl = 'https://raw.githubusercontent.com/Foofie4ev/slice_SCOREBOARD/refs/heads/main/green_house.png';
-                    break;
-                case '6':
-                    backgroundUrl = 'https://raw.githubusercontent.com/Foofie4ev/slice_SCOREBOARD/refs/heads/main/veggie_garden.png';
-                    break;
-            }
-            
-            // Change the background image immediately when selecting a court
-            document.body.style.backgroundImage = `url('${backgroundUrl}')`;
-            
-            // Update the court name display - split into prefix and main name
-            const nameParts = courtName.split(' ');
-            const prefix = nameParts[0];
-            const mainName = nameParts.slice(1).join(' ');
-            
-            document.querySelector('#court-name-display .court-prefix').textContent = prefix;
-            document.querySelector('#court-name-display .court-main-name').textContent = mainName;
-        }
-
-        function startGame() {
-            // Get selected court
-            const selectedCourtElement = document.querySelector('.court-option.selected');
-            if (selectedCourtElement) {
-                const courtNumber = selectedCourtElement.getAttribute('data-court');
-                const courtName = selectedCourtElement.getAttribute('data-name');
+        let greenGames = 0;
+        let orangeGames = 0;
+        
+        // Function to hide URL bar
+        function hideURLbar() {
+            if (window.location.hash.indexOf('#') == -1) {
+                // First try using scrollTo
+                window.scrollTo(0, 1);
                 
-                // Get the correct background image URL based on court number
-                let backgroundUrl = '';
-                switch(courtNumber) {
-                    case '1':
-                        backgroundUrl = 'https://raw.githubusercontent.com/Foofie4ev/slice_SCOREBOARD/refs/heads/main/cutting_board.png';
-                        break;
-                    case '2':
-                        backgroundUrl = 'https://raw.githubusercontent.com/Foofie4ev/slice_SCOREBOARD/refs/heads/main/the_orchard.png';
-                        break;
-                    case '3':
-                        backgroundUrl = 'https://raw.githubusercontent.com/Foofie4ev/slice_SCOREBOARD/refs/heads/main/secret_garden.png';
-                        break;
-                    case '4':
-                        backgroundUrl = 'https://raw.githubusercontent.com/Foofie4ev/slice_SCOREBOARD/refs/heads/main/farmers_market.png';
-                        break;
-                    case '5':
-                        backgroundUrl = 'https://raw.githubusercontent.com/Foofie4ev/slice_SCOREBOARD/refs/heads/main/green_house.png';
-                        break;
-                    case '6':
-                        backgroundUrl = 'https://raw.githubusercontent.com/Foofie4ev/slice_SCOREBOARD/refs/heads/main/veggie_garden.png';
-                        break;
+                // Then try using minimal-ui for iOS
+                if (navigator.userAgent.match(/(iPad|iPhone|iPod)/g)) {
+                    document.documentElement.style.webkitAppearance = 'none';
+                    document.body.style.webkitAppearance = 'none';
                 }
                 
-                // This is now the main background of the app
-                document.body.style.backgroundImage = `url('${backgroundUrl}')`;
+                // Also set minimal-ui meta viewport for iOS
+                let metaViewport = document.querySelector('meta[name=viewport]');
+                if (metaViewport) {
+                    if (!metaViewport.content.includes('minimal-ui')) {
+                        metaViewport.content += ', minimal-ui';
+                    }
+                }
                 
-                // Update the court name display - split into prefix and main name
-                const nameParts = courtName.split(' ');
-                const prefix = nameParts[0];
-                const mainName = nameParts.slice(1).join(' ');
-                
-                document.querySelector('#court-name-display .court-prefix').textContent = prefix;
-                document.querySelector('#court-name-display .court-main-name').textContent = mainName;
+                // For some browsers, attempt to go fullscreen
+                if (document.documentElement.requestFullscreen) {
+                    document.documentElement.requestFullscreen();
+                } else if (document.documentElement.webkitRequestFullscreen) {
+                    document.documentElement.webkitRequestFullscreen();
+                } else if (document.documentElement.msRequestFullscreen) {
+                    document.documentElement.msRequestFullscreen();
+                }
             }
+        }
+        
+        // Call hideURLbar function after page load
+        window.addEventListener('load', function() {
+            // Call hideURLbar after a slight delay
+            setTimeout(hideURLbar, 100);
             
-            // Close the modal
-            closeCourtModal();
+            // Check orientation
+            checkOrientation();
+        });
+        
+        // Call hideURLbar again after any orientation change
+        window.addEventListener('orientationchange', function() {
+            setTimeout(hideURLbar, 100);
+        });
+        
+        window.addEventListener('resize', checkOrientation);
+        
+        // Try to do it on user interaction too (more likely to be allowed by browsers)
+        document.addEventListener('click', function() {
+            setTimeout(hideURLbar, 100);
+        });
+        
+        function checkOrientation() {
+            const rotateMessage = document.getElementById('rotate-message');
+            if (window.innerHeight > window.innerWidth) {
+                rotateMessage.style.display = 'flex';
+            } else {
+                rotateMessage.style.display = 'none';
+                // Hide URL bar again on orientation change
+                setTimeout(hideURLbar, 100);
+            }
         }
 
         function getTennisScore(points) {
@@ -604,147 +455,57 @@
                 case 1: return "15";
                 case 2: return "30";
                 case 3: return "40";
+                default: return "❤️";
             }
         }
 
         function incrementScore(team) {
             if (greenPoints >= 4 || orangePoints >= 4) return;
+            
             if (team === 'green') {
                 greenPoints++;
                 document.getElementById('green-score').textContent = getTennisScore(greenPoints);
+                
+                // Check if game is won
+                if (greenPoints >= 4) {
+                    greenGames++;
+                    document.getElementById('green-games').textContent = greenGames;
+                }
             } else if (team === 'orange') {
                 orangePoints++;
                 document.getElementById('orange-score').textContent = getTennisScore(orangePoints);
+                
+                // Check if game is won
+                if (orangePoints >= 4) {
+                    orangeGames++;
+                    document.getElementById('orange-games').textContent = orangeGames;
+                }
             }
+            
+            // Try to hide URL bar after score change
+            setTimeout(hideURLbar, 100);
         }
 
-        function resetScores() {
+        function resetPoints() {
             greenPoints = 0;
             orangePoints = 0;
             document.getElementById('green-score').textContent = "❤️";
             document.getElementById('orange-score').textContent = "❤️";
-        }
-
-        // Event listeners for court selection
-        document.querySelectorAll('.court-option').forEach(court => {
-            court.addEventListener('click', function() {
-                const courtNumber = this.getAttribute('data-court');
-                const courtName = this.getAttribute('data-name');
-                selectCourt(courtNumber, courtName);
-            });
-        });
-    </script>
-</body>
-</html></div>
-                    </div>
-                    <div class="court-option" data-court="3" style="background-image: url('../PNGs/court3.jpg');">
-                        <div class="court-name">Court 3</div>
-                    </div>
-                    <div class="court-option" data-court="4" style="background-image: url('../PNGs/court4.jpg');">
-                        <div class="court-name">Court 4</div>
-                    </div>
-                    <div class="court-option" data-court="5" style="background-image: url('../PNGs/court5.jpg');">
-                        <div class="court-name">Court 5</div>
-                    </div>
-                    <div class="court-option" data-court="6" style="background-image: url('../PNGs/court6.jpg');">
-                        <div class="court-name">Court 6</div>
-                    </div>
-                </div>
-            </div>
             
-            <button class="modal-button" onclick="startGame()">Start Game</button>
-        </div>
-    </div>
-
-    <script>
-        let greenPoints = 0;
-        let orangePoints = 0;
-        let selectedCourt = 1;
-
-        // Show the settings modal when the page loads
-        window.onload = function() {
-            openSettingsModal();
-        };
-
-        function openSettingsModal() {
-            document.getElementById('settings-modal').style.display = 'block';
-            // Reset scores when opening the modal
-            resetScores();
+            // Try to hide URL bar after reset
+            setTimeout(hideURLbar, 100);
         }
-
-        function closeSettingsModal() {
-            document.getElementById('settings-modal').style.display = 'none';
-        }
-
-        function selectCourt(courtNumber) {
-            // Remove selected class from all court options
-            document.querySelectorAll('.court-option').forEach(court => {
-                court.classList.remove('selected');
-            });
+        
+        function resetAll() {
+            resetPoints();
+            greenGames = 0;
+            orangeGames = 0;
+            document.getElementById('green-games').textContent = "0";
+            document.getElementById('orange-games').textContent = "0";
             
-            // Add selected class to the clicked court
-            document.querySelector(`.court-option[data-court="${courtNumber}"]`).classList.add('selected');
-            
-            selectedCourt = courtNumber;
-            
-            // Change the background image based on the selected court
-            document.body.style.backgroundImage = `url('../PNGs/court${courtNumber}.jpg')`;
+            // Try to hide URL bar after reset
+            setTimeout(hideURLbar, 100);
         }
-
-        function startGame() {
-            // Get player names from input fields
-            const greenPlayerName = document.getElementById('green-player-name').value.trim() || "Player 1";
-            const orangePlayerName = document.getElementById('orange-player-name').value.trim() || "Player 2";
-            
-            // Update player name displays
-            document.getElementById('green-player').textContent = greenPlayerName;
-            document.getElementById('orange-player').textContent = orangePlayerName;
-            
-            // Get selected court
-            const selectedCourtElement = document.querySelector('.court-option.selected');
-            if (selectedCourtElement) {
-                selectCourt(selectedCourtElement.getAttribute('data-court'));
-            }
-            
-            // Close the modal
-            closeSettingsModal();
-        }
-
-        function getTennisScore(points) {
-            if (points >= 4) return "GAME";
-            switch (points) {
-                case 0: return "❤️";
-                case 1: return "15";
-                case 2: return "30";
-                case 3: return "40";
-            }
-        }
-
-        function incrementScore(team) {
-            if (greenPoints >= 4 || orangePoints >= 4) return;
-            if (team === 'green') {
-                greenPoints++;
-                document.getElementById('green-score').textContent = getTennisScore(greenPoints);
-            } else if (team === 'orange') {
-                orangePoints++;
-                document.getElementById('orange-score').textContent = getTennisScore(orangePoints);
-            }
-        }
-
-        function resetScores() {
-            greenPoints = 0;
-            orangePoints = 0;
-            document.getElementById('green-score').textContent = "❤️";
-            document.getElementById('orange-score').textContent = "❤️";
-        }
-
-        // Event listeners for court selection
-        document.querySelectorAll('.court-option').forEach(court => {
-            court.addEventListener('click', function() {
-                const courtNumber = this.getAttribute('data-court');
-                selectCourt(courtNumber);
-            });
-        });
     </script>
 </body>
 </html>
