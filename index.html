@@ -113,6 +113,8 @@
             cursor: pointer;
             box-shadow: 0 3px 5px rgba(0,0,0,0.2);
             margin-bottom: 10px;
+            position: relative;
+            top: -30px;
         }
         
         .new-match-button {
@@ -125,7 +127,7 @@
             cursor: pointer;
             box-shadow: 0 3px 5px rgba(0,0,0,0.2);
             position: absolute;
-            bottom: 120px; /* Moved up from 60px - halfway between center and bottom */
+            bottom: 70px; /* Moved up to create more space */
             left: 50%;
             transform: translateX(-50%);
         }
@@ -261,7 +263,7 @@
             background-color: rgba(0,0,0,0.5);
             border-radius: 10px;
             position: absolute;
-            bottom: 20px;
+            bottom: 10px;
             left: 50%;
             transform: translateX(-50%);
             width: 80%;
@@ -479,7 +481,7 @@
         .dice-container {
             display: none; /* Hidden by default */
             position: absolute;
-            top: 60%;
+            top: 53%;
             left: 50%;
             transform: translateX(-50%);
             grid-template-columns: repeat(2, 1fr);
@@ -1343,9 +1345,9 @@
             const width = window.innerWidth;
             const height = window.innerHeight;
             
-            canvas.width = width * 2; // Higher resolution
-            canvas.height = height * 2; // Higher resolution
-            ctx.scale(2, 2); // Scale for higher resolution
+            // Keep original aspect ratio, no squeezing
+            canvas.width = width;
+            canvas.height = height;
             
             // Make sure flash is not visible during capture
             const flash = document.getElementById('screenshot-flash');
@@ -1367,16 +1369,20 @@
             
             backgroundImg.crossOrigin = "Anonymous";
             backgroundImg.onload = () => {
-                // Draw the background
+                // Draw the background with proper sizing
                 ctx.drawImage(backgroundImg, 0, 0, width, height);
                 
                 // Then capture the page elements using html2canvas
                 html2canvas(document.getElementById('scoreboard'), {
                     backgroundColor: null,
                     useCORS: true,
-                    scale: 1, // Already scaled the canvas
+                    scale: 1,
                     allowTaint: true,
-                    logging: false
+                    logging: false,
+                    width: width,
+                    height: height,
+                    windowWidth: width,
+                    windowHeight: height
                 }).then(scoreboardCanvas => {
                     // Draw the scoreboard on top of the background
                     ctx.drawImage(scoreboardCanvas, 0, 0, width, height);
