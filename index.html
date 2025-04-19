@@ -487,11 +487,12 @@
             gap: 15px;
             margin-top: 20px;
             z-index: 10;
+            width: 180px; /* Limit max width to prevent oversized buttons */
         }
         
         .dice {
-            width: 75px;
-            height: 75px;
+            width: 70px;
+            height: 70px;
             cursor: pointer;
             position: relative;
             border-radius: 8px;
@@ -634,9 +635,15 @@
             }
             
             .dice {
-                width: 65px;
-                height: 65px;
-                font-size: 0.8rem;
+                width: 60px;
+                height: 60px;
+                font-size: 0.75rem;
+            }
+            
+            .dice-container {
+                width: 160px;
+                gap: 10px;
+                top: 55%;
             }
             
             .dice-result-container {
@@ -647,6 +654,11 @@
             
             .dice-label-text {
                 font-size: 1.2rem;
+            }
+            
+            .instruction-text {
+                bottom: 15px;
+                font-size: 1rem;
             }
         }
         
@@ -730,14 +742,16 @@
             }
             
             .dice {
-                width: 60px;
-                height: 60px;
-                font-size: 0.7rem;
+                width: 45px;
+                height: 45px;
+                font-size: 0.6rem;
             }
             
             .dice-container {
-                gap: 10px;
-                margin-top: 30px;
+                width: 120px;
+                gap: 8px;
+                margin-top: 20px;
+                top: 53%;
             }
             
             .dice-result-container {
@@ -1309,19 +1323,17 @@
         
         // Screenshot functionality
         function takeScreenshot() {
-            // Create a flash effect element reference
-            const flash = document.getElementById('screenshot-flash');
-            
             // First capture the screenshot before showing the flash
             captureScreenshot();
             
-            // Then show the flash effect for feedback only
+            // Then show the flash effect for feedback only (after screenshot is taken)
             setTimeout(() => {
+                const flash = document.getElementById('screenshot-flash');
                 flash.style.animation = 'flash 0.5s forwards';
                 setTimeout(() => {
                     flash.style.animation = '';
                 }, 500);
-            }, 100);
+            }, 500); // Delay flash animation until after screenshot is captured
         }
         
         function captureScreenshot() {
@@ -1334,6 +1346,11 @@
             canvas.width = width * 2; // Higher resolution
             canvas.height = height * 2; // Higher resolution
             ctx.scale(2, 2); // Scale for higher resolution
+            
+            // Make sure flash is not visible during capture
+            const flash = document.getElementById('screenshot-flash');
+            flash.style.opacity = 0;
+            flash.style.animation = '';
             
             // First, capture the background
             const backgroundImg = new Image();
