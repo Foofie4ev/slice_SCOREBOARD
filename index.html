@@ -20,11 +20,14 @@
             text-align: center;
             background: url('https://raw.githubusercontent.com/Foofie4ev/slice_SCOREBOARD/main/wood_texture.png') center center;
             background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
             color: #333;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            transition: background-image 0.5s ease;
         }
         
         #rotate-message {
@@ -154,6 +157,22 @@
             color: #ff5722;
         }
         
+        .player-name {
+            font-style: italic;
+            margin-top: -10px;
+            margin-bottom: 10px;
+            font-size: 1.5rem;
+            text-shadow: -1px -1px 0 white, 1px -1px 0 white, -1px 1px 0 white, 1px 1px 0 white;
+        }
+        
+        #green-player-display {
+            color: #2e7d32;
+        }
+        
+        #orange-player-display {
+            color: #ff5722;
+        }
+        
         .button-container {
             position: relative;
             width: 180px;
@@ -169,6 +188,12 @@
             background-size: contain;
             background-repeat: no-repeat;
             background-position: center;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+        
+        .team-button:active {
+            transform: scale(0.92);
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
         }
         
         .green-button {
@@ -242,6 +267,389 @@
             width: 80%;
         }
         
+        /* Screenshot button */
+        .screenshot-button {
+            position: absolute;
+            bottom: 90px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background-color: rgba(0,0,0,0.7);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 20;
+            cursor: pointer;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+            border: 2px solid white;
+        }
+        
+        .screenshot-button svg {
+            width: 30px;
+            height: 30px;
+            fill: white;
+        }
+        
+        .screenshot-button:active {
+            transform: scale(0.95);
+        }
+        
+        /* Screenshot feedback */
+        .screenshot-flash {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: white;
+            opacity: 0;
+            z-index: 1000;
+            pointer-events: none;
+        }
+        
+        @keyframes flash {
+            0% { opacity: 0; }
+            50% { opacity: 0.8; }
+            100% { opacity: 0; }
+        }
+        
+        .screenshot-feedback {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0,0,0,0.8);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 1rem;
+            z-index: 2000;
+            display: none;
+        }
+        
+        /* Modals - Common Styles */
+        #player-name-modal,
+        #court-selection-modal,
+        #dice-type-modal,
+        #dice-roll-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 80%;
+            text-align: center;
+        }
+        
+        .modal-content h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        
+        /* Player Name Modal Specific */
+        .input-group {
+            margin: 15px 0;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        #green-player-name-label {
+            color: #2e7d32;
+        }
+        
+        #orange-player-name-label {
+            color: #ff5722;
+        }
+        
+        .input-group input {
+            width: 90%;
+            padding: 8px;
+            font-size: 1rem;
+            border-radius: 5px;
+        }
+        
+        #green-player-name {
+            border: 2px solid #2e7d32;
+        }
+        
+        #orange-player-name {
+            border: 2px solid #ff5722;
+        }
+        
+        .submit-button {
+            background-color: #000000;
+            color: white;
+            padding: 10px 20px;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        
+        /* Court Selection Modal Specific */
+        .court-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: 15px;
+            max-width: 90%;
+            margin: 0 auto;
+        }
+        
+        .court-option {
+            cursor: pointer;
+            border: 3px solid transparent;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+        
+        .court-option:hover {
+            transform: scale(1.05);
+            border-color: #333;
+        }
+        
+        .court-option.selected {
+            border-color: #ff5722;
+            background-color: rgba(255, 87, 34, 0.1);
+        }
+        
+        .court-option img {
+            width: 100%;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+        
+        .court-name {
+            margin: 8px 0;
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #333;
+            text-align: center;
+        }
+        
+        /* Dice Type Modal Specific */
+        .dice-option-container {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+        }
+        
+        .dice-option {
+            background-color: #f5f5f5;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 40%;
+            text-align: center;
+        }
+        
+        .dice-option:hover {
+            transform: scale(1.05);
+            border-color: #666;
+        }
+        
+        /* Digital Dice Styles */
+        .dice-container {
+            display: none; /* Hidden by default */
+            position: absolute;
+            top: 60%;
+            left: 50%;
+            transform: translateX(-50%);
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+            z-index: 10;
+        }
+        
+        .dice {
+            width: 75px;
+            height: 75px;
+            cursor: pointer;
+            position: relative;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            transition: transform 0.2s ease;
+            font-size: 0.9rem;
+            text-align: center;
+            padding: 5px;
+        }
+        
+        .dice:active {
+            transform: scale(0.92);
+        }
+
+        .first-serve-dice {
+            background-color: #2e7d32; /* Green */
+            color: white;
+        }
+        
+        .second-serve-dice {
+            background-color: #ff5722; /* Orange */
+            color: white;
+        }
+        
+        .volley-dice {
+            background-color: #9c27b0; /* Purple */
+            color: #76ff03; /* Neon Green */
+        }
+        
+        .drop-shot-dice {
+            background-color: #ffeb3b; /* Yellow */
+            color: #00c853; /* Bright Green */
+        }
+        
+        /* Dice Roll Modal */
+        #dice-roll-modal .modal-content {
+            position: relative;
+            padding: 40px;
+            max-width: 300px;
+            width: 100%;
+        }
+        
+        .dice-result-container {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 20px auto;
+            border-radius: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            font-size: 3rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .first-serve-result {
+            background-color: #2e7d32;
+            color: white;
+        }
+        
+        .second-serve-result {
+            background-color: #ff5722;
+            color: white;
+        }
+        
+        .volley-result {
+            background-color: #9c27b0;
+            color: #76ff03;
+        }
+        
+        .drop-shot-result {
+            background-color: #ffeb3b;
+            color: #00c853;
+        }
+        
+        .close-dice-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 30px;
+            height: 30px;
+            background-color: #f44336;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        .close-dice-button:active {
+            transform: scale(0.95);
+        }
+        
+        .dice-label-text {
+            margin-top: 10px;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        /* Dice Rolling Animation */
+        @keyframes diceRoll {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            25% { transform: translateY(-100px) rotate(90deg); opacity: 0.8; }
+            50% { transform: translateY(0) rotate(180deg); opacity: 0.6; }
+            75% { transform: translateY(-50px) rotate(270deg); opacity: 0.8; }
+            100% { transform: translateY(0) rotate(360deg); opacity: 1; }
+        }
+        
+        @keyframes dicePulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(0.9); }
+            100% { transform: scale(1); }
+        }
+        
+        .dice-rolling {
+            animation: dicePulse 0.3s ease-out;
+        }
+        
+        .roll-animation {
+            animation: diceRoll 1s ease-in-out;
+        }
+        
+        @media (max-width: 768px) {
+            .court-grid {
+                grid-template-columns: repeat(2, 1fr);
+                grid-template-rows: repeat(3, 1fr);
+            }
+            
+            .court-option img {
+                height: 80px;
+            }
+            
+            .dice {
+                width: 65px;
+                height: 65px;
+                font-size: 0.8rem;
+            }
+            
+            .dice-result-container {
+                width: 130px;
+                height: 130px;
+                font-size: 2.5rem;
+            }
+            
+            .dice-label-text {
+                font-size: 1.2rem;
+            }
+        }
+        
         @media (orientation: landscape) {
             .teams {
                 position: absolute;
@@ -263,6 +671,11 @@
             .score-text {
                 font-size: min(4rem, 7vw);
             }
+            
+            .dice-container {
+                top: 55%;
+                margin-top: 40px;
+            }
         }
         
         @media (orientation: landscape) and (max-height: 500px) {
@@ -281,6 +694,12 @@
             
             h2 {
                 font-size: 1.8rem;
+                margin-bottom: 5px;
+            }
+            
+            .player-name {
+                font-size: 1.2rem;
+                margin-top: -5px;
                 margin-bottom: 5px;
             }
             
@@ -309,6 +728,27 @@
                 font-size: 0.8rem;
                 padding: 3px 10px;
             }
+            
+            .dice {
+                width: 60px;
+                height: 60px;
+                font-size: 0.7rem;
+            }
+            
+            .dice-container {
+                gap: 10px;
+                margin-top: 30px;
+            }
+            
+            .dice-result-container {
+                width: 120px;
+                height: 120px;
+                font-size: 2.2rem;
+            }
+            
+            .dice-label-text {
+                font-size: 1.2rem;
+            }
         }
         
         @media (orientation: portrait) {
@@ -325,6 +765,37 @@
                 display: flex;
             }
         }
+        
+        /* Additional animations */
+        @keyframes buttonPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(0.92); }
+            100% { transform: scale(1); }
+        }
+        
+        .button-pressed {
+            animation: buttonPulse 0.2s ease;
+        }
+        
+        @keyframes gameWon {
+            0% { transform: scale(1); }
+            25% { transform: scale(1.05); }
+            50% { transform: scale(1); }
+            75% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .game-won {
+            animation: gameWon 1s ease;
+        }
+        
+        .reset-points-button:active {
+            transform: scale(0.95);
+        }
+        
+        .new-match-button:active {
+            transform: translateX(-50%) scale(0.95);
+        }
     </style>
 </head>
 <body>
@@ -333,6 +804,77 @@
         <img src="https://raw.githubusercontent.com/Foofie4ev/slice_SCOREBOARD/main/slice_logo.png" alt="SLICE! Logo">
         <h2>Please Rotate Your Device</h2>
         <p>For the best experience, use landscape mode</p>
+    </div>
+    
+    <!-- Player Name Modal -->
+    <div id="player-name-modal">
+        <div class="modal-content">
+            <h2>Enter Player Names</h2>
+            <div class="input-group">
+                <label id="green-player-name-label" for="green-player-name">Green Player's Name:</label>
+                <input type="text" id="green-player-name">
+            </div>
+            <div class="input-group">
+                <label id="orange-player-name-label" for="orange-player-name">Orange Player's Name:</label>
+                <input type="text" id="orange-player-name">
+            </div>
+            <button class="submit-button" onclick="savePlayerNames()">Submit</button>
+        </div>
+    </div>
+    
+    <!-- Court Selection Modal -->
+    <div id="court-selection-modal" style="display: none;">
+        <div class="modal-content">
+            <h2>Select Your Court</h2>
+            <div class="court-grid">
+                <div class="court-option" onclick="selectCourt('secret_garden.png')">
+                    <img src="https://raw.githubusercontent.com/Foofie4ev/slice_SCOREBOARD/main/secret_garden.png" alt="The Secret Garden">
+                    <div class="court-name">The Secret Garden</div>
+                </div>
+                <div class="court-option" onclick="selectCourt('green_house.png')">
+                    <img src="https://raw.githubusercontent.com/Foofie4ev/slice_SCOREBOARD/main/green_house.png" alt="The Greenhouse">
+                    <div class="court-name">The Greenhouse</div>
+                </div>
+                <div class="court-option" onclick="selectCourt('the_orchard.png')">
+                    <img src="https://raw.githubusercontent.com/Foofie4ev/slice_SCOREBOARD/main/the_orchard.png" alt="The Orchard">
+                    <div class="court-name">The Orchard</div>
+                </div>
+                <div class="court-option" onclick="selectCourt('veggie_garden.png')">
+                    <img src="https://raw.githubusercontent.com/Foofie4ev/slice_SCOREBOARD/main/veggie_garden.png" alt="The Veggie Garden">
+                    <div class="court-name">The Veggie Garden</div>
+                </div>
+                <div class="court-option" onclick="selectCourt('cutting_board.png')">
+                    <img src="https://raw.githubusercontent.com/Foofie4ev/slice_SCOREBOARD/main/cutting_board.png" alt="The Cutting Board">
+                    <div class="court-name">The Cutting Board</div>
+                </div>
+                <div class="court-option" onclick="selectCourt('farmers_market.png')">
+                    <img src="https://raw.githubusercontent.com/Foofie4ev/slice_SCOREBOARD/main/farmers_market.png" alt="The Farmer's Market">
+                    <div class="court-name">The Farmer's Market</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Dice Type Modal -->
+    <div id="dice-type-modal" style="display: none;">
+        <div class="modal-content">
+            <h2>Select Dice Type</h2>
+            <div class="dice-option-container">
+                <div class="dice-option" onclick="selectDiceType('real')">Real Dice</div>
+                <div class="dice-option" onclick="selectDiceType('digital')">Digital Dice</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Dice Roll Modal -->
+    <div id="dice-roll-modal" style="display: none;">
+        <div class="modal-content">
+            <button class="close-dice-button" onclick="closeDiceRoll()">&times;</button>
+            <div id="dice-result-container" class="dice-result-container">
+                <div id="dice-result">?</div>
+            </div>
+            <div id="dice-label" class="dice-label-text">Rolling...</div>
+        </div>
     </div>
     
     <div id="scoreboard">
@@ -344,6 +886,7 @@
             <div class="teams">
                 <div class="team" id="green-team">
                     <h2>Green Team</h2>
+                    <div id="green-player-display" class="player-name"></div>
                     <div class="button-container">
                         <div class="team-button green-button" onclick="incrementScore('green')"></div>
                         <div id="green-score" class="score-text">❤️</div>
@@ -356,6 +899,7 @@
                 
                 <div class="team" id="orange-team">
                     <h2>Orange Team</h2>
+                    <div id="orange-player-display" class="player-name"></div>
                     <div class="button-container">
                         <div class="team-button orange-button" onclick="incrementScore('orange')"></div>
                         <div id="orange-score" class="score-text">❤️</div>
@@ -371,19 +915,66 @@
                 <button id="reset-point" class="reset-points-button" onclick="resetPoints()">Reset Points</button>
             </div>
             
+            <!-- Digital Dice Container -->
+            <div class="dice-container" id="dice-container">
+                <!-- First Serve Dice -->
+                <div class="dice first-serve-dice">
+                    <div>1st<br>Serve</div>
+                </div>
+                
+                <!-- Second Serve Dice -->
+                <div class="dice second-serve-dice">
+                    <div>2nd<br>Serve</div>
+                </div>
+                
+                <!-- Volley Dice -->
+                <div class="dice volley-dice">
+                    <div>Volley</div>
+                </div>
+                
+                <!-- Drop-Shot Dice -->
+                <div class="dice drop-shot-dice">
+                    <div>Drop Shot</div>
+                </div>
+            </div>
+            
             <button id="reset-all" class="new-match-button" onclick="resetAll()">New Match</button>
             
             <div class="instruction-text">
                 Tap your team's ball to add a point to your score
             </div>
+            
+            <!-- Screenshot Button -->
+            <div class="screenshot-button" onclick="takeScreenshot()">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M12 15a3 3 0 100-6 3 3 0 000 6z"/>
+                    <path d="M20 4h-3.17l-1.24-1.35A1.99 1.99 0 0014.12 2H9.88c-.56 0-1.1.24-1.48.65L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-8 13c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/>
+                </svg>
+            </div>
         </div>
+        
+        <!-- Screenshot Flash Effect -->
+        <div class="screenshot-flash" id="screenshot-flash"></div>
+        
+        <!-- Screenshot Feedback Message -->
+        <div class="screenshot-feedback" id="screenshot-feedback">Screenshot saved!</div>
     </div>
     
     <script>
+        // Game state variables
         let greenPoints = 0;
         let orangePoints = 0;
         let greenGames = 0;
         let orangeGames = 0;
+        let useDigitalDice = false;
+        
+        // Dice face definitions
+        const diceFaces = {
+            'first-serve': [3, 3, 4, 4, 5, 6, "Fault!", "Let!"],
+            'second-serve': [1, 1, 2, 2, 3, 4, "Fault!", "Let!"],
+            'volley': [7, 7, 7, 6, 6, 6, "Out!", "Net!"],
+            'drop-shot': [1, 1, 1, 2, 2, 2, "Out!", "Net!"]
+        };
         
         // Function to hide URL bar
         function hideURLbar() {
@@ -421,8 +1012,25 @@
             // Call hideURLbar after a slight delay
             setTimeout(hideURLbar, 100);
             
+            // Check if there's a saved court and apply it
+            const savedCourt = localStorage.getItem('selectedCourt');
+            if (savedCourt) {
+                document.body.style.backgroundImage = `url('https://raw.githubusercontent.com/Foofie4ev/slice_SCOREBOARD/main/${savedCourt}')`;
+            }
+            
+            // Check if digital dice preference was saved
+            const savedDiceType = localStorage.getItem('useDigitalDice');
+            if (savedDiceType !== null) {
+                useDigitalDice = savedDiceType === 'true';
+                document.getElementById('dice-container').style.display = 
+                    useDigitalDice ? 'grid' : 'none';
+            }
+            
             // Check orientation
             checkOrientation();
+            
+            // Set up dice click handlers
+            setupDiceHandlers();
         });
         
         // Call hideURLbar again after any orientation change
@@ -445,6 +1053,12 @@
                 rotateMessage.style.display = 'none';
                 // Hide URL bar again on orientation change
                 setTimeout(hideURLbar, 100);
+                
+                // Show player name modal when properly oriented
+                // Only show if names haven't been entered yet
+                if (document.getElementById('green-player-display').textContent === "") {
+                    setTimeout(showPlayerNameModal, 500); // Small delay to ensure rotation is complete
+                }
             }
         }
 
@@ -462,6 +1076,17 @@
         function incrementScore(team) {
             if (greenPoints >= 4 || orangePoints >= 4) return;
             
+            // Visual feedback for button press (beyond CSS)
+            const buttonElement = document.querySelector(team === 'green' ? '.green-button' : '.orange-button');
+            
+            // Add additional animation class
+            buttonElement.classList.add('button-pressed');
+            
+            // Remove the class after animation completes
+            setTimeout(() => {
+                buttonElement.classList.remove('button-pressed');
+            }, 200);
+            
             if (team === 'green') {
                 greenPoints++;
                 document.getElementById('green-score').textContent = getTennisScore(greenPoints);
@@ -470,6 +1095,13 @@
                 if (greenPoints >= 4) {
                     greenGames++;
                     document.getElementById('green-games').textContent = greenGames;
+                    
+                    // Celebration animation for winning a game
+                    const greenTeam = document.getElementById('green-team');
+                    greenTeam.classList.add('game-won');
+                    setTimeout(() => {
+                        greenTeam.classList.remove('game-won');
+                    }, 1000);
                 }
             } else if (team === 'orange') {
                 orangePoints++;
@@ -479,6 +1111,13 @@
                 if (orangePoints >= 4) {
                     orangeGames++;
                     document.getElementById('orange-games').textContent = orangeGames;
+                    
+                    // Celebration animation for winning a game
+                    const orangeTeam = document.getElementById('orange-team');
+                    orangeTeam.classList.add('game-won');
+                    setTimeout(() => {
+                        orangeTeam.classList.remove('game-won');
+                    }, 1000);
                 }
             }
             
@@ -503,9 +1142,294 @@
             document.getElementById('green-games').textContent = "0";
             document.getElementById('orange-games').textContent = "0";
             
+            // Option to change court
+            if (confirm("Would you like to select a new court and dice type?")) {
+                showCourtSelectionModal();
+            }
+            
             // Try to hide URL bar after reset
             setTimeout(hideURLbar, 100);
         }
+        
+        // Player Name Modal Functions
+        function showPlayerNameModal() {
+            document.getElementById('player-name-modal').style.display = 'flex';
+        }
+        
+        function savePlayerNames() {
+            const greenPlayerName = document.getElementById('green-player-name').value || "Player 1";
+            const orangePlayerName = document.getElementById('orange-player-name').value || "Player 2";
+            
+            document.getElementById('green-player-display').textContent = greenPlayerName;
+            document.getElementById('orange-player-display').textContent = orangePlayerName;
+            
+            document.getElementById('player-name-modal').style.display = 'none';
+            
+            // Show court selection modal after names are submitted
+            setTimeout(showCourtSelectionModal, 300);
+        }
+        
+        // Court Selection Modal Functions
+        function showCourtSelectionModal() {
+            document.getElementById('court-selection-modal').style.display = 'flex';
+        }
+        
+        function selectCourt(courtImage) {
+            // Update background image
+            document.body.style.backgroundImage = `url('https://raw.githubusercontent.com/Foofie4ev/slice_SCOREBOARD/main/${courtImage}')`;
+            
+            // Store the selected court in local storage
+            localStorage.setItem('selectedCourt', courtImage);
+            
+            // Highlight the selected court
+            const courtOptions = document.querySelectorAll('.court-option');
+            courtOptions.forEach(option => {
+                option.classList.remove('selected');
+                if (option.querySelector('img').src.includes(courtImage)) {
+                    option.classList.add('selected');
+                }
+            });
+            
+            // Close the modal after selection
+            setTimeout(() => {
+                document.getElementById('court-selection-modal').style.display = 'none';
+                
+                // Show dice type modal after court selection
+                setTimeout(showDiceTypeModal, 300);
+            }, 500);
+        }
+        
+        // Dice Type Modal Functions
+        function showDiceTypeModal() {
+            document.getElementById('dice-type-modal').style.display = 'flex';
+        }
+        
+        function selectDiceType(type) {
+            useDigitalDice = (type === 'digital');
+            
+            // Store the dice preference in local storage
+            localStorage.setItem('useDigitalDice', useDigitalDice);
+            
+            // Show or hide dice container based on selection
+            document.getElementById('dice-container').style.display = 
+                useDigitalDice ? 'grid' : 'none';
+            
+            // Close the modal
+            document.getElementById('dice-type-modal').style.display = 'none';
+        }
+        
+        // Setup dice handlers
+        function setupDiceHandlers() {
+            // First Serve Dice
+            document.querySelector('.first-serve-dice').addEventListener('click', function() {
+                rollDice('first-serve');
+            });
+            
+            // Second Serve Dice
+            document.querySelector('.second-serve-dice').addEventListener('click', function() {
+                rollDice('second-serve');
+            });
+            
+            // Volley Dice
+            document.querySelector('.volley-dice').addEventListener('click', function() {
+                rollDice('volley');
+            });
+            
+            // Drop Shot Dice
+            document.querySelector('.drop-shot-dice').addEventListener('click', function() {
+                rollDice('drop-shot');
+            });
+        }
+        
+        // Roll the dice
+        function rollDice(diceType) {
+            // Find the dice element
+            const diceElement = document.querySelector(`.${diceType}-dice`);
+            
+            // Add animation class
+            diceElement.classList.add('dice-rolling');
+            
+            // Remove the class after animation completes
+            setTimeout(() => {
+                diceElement.classList.remove('dice-rolling');
+            }, 300);
+            
+            // Get random result from dice faces
+            const faces = diceFaces[diceType];
+            const result = faces[Math.floor(Math.random() * faces.length)];
+            
+            // Get the result container and set the appropriate class
+            const resultContainer = document.getElementById('dice-result-container');
+            resultContainer.className = 'dice-result-container';
+            resultContainer.classList.add(`${diceType}-result`);
+            
+            // Show dice roll modal
+            const diceRollModal = document.getElementById('dice-roll-modal');
+            diceRollModal.style.display = 'flex';
+            
+            // Set initial state
+            const diceResult = document.getElementById('dice-result');
+            const diceLabel = document.getElementById('dice-label');
+            diceResult.textContent = '?';
+            diceLabel.textContent = 'Rolling...';
+            
+            // Add rolling animation class to result
+            diceResult.parentElement.classList.add('roll-animation');
+            
+            // After animation delay, show the result
+            setTimeout(() => {
+                // Remove animation class
+                diceResult.parentElement.classList.remove('roll-animation');
+                
+                // Display the result
+                diceResult.textContent = result;
+                
+                // Update the label
+                switch(diceType) {
+                    case 'first-serve':
+                        diceLabel.textContent = '1st Serve';
+                        break;
+                    case 'second-serve':
+                        diceLabel.textContent = '2nd Serve';
+                        break;
+                    case 'volley':
+                        diceLabel.textContent = 'Volley';
+                        break;
+                    case 'drop-shot':
+                        diceLabel.textContent = 'Drop Shot';
+                        break;
+                }
+            }, 1000); // End of animation
+        }
+        
+        // Close dice roll result
+        function closeDiceRoll() {
+            document.getElementById('dice-roll-modal').style.display = 'none';
+        }
+        
+        // Screenshot functionality
+        function takeScreenshot() {
+            // Create a flash effect element reference
+            const flash = document.getElementById('screenshot-flash');
+            
+            // First capture the screenshot before showing the flash
+            captureScreenshot();
+            
+            // Then show the flash effect for feedback only
+            setTimeout(() => {
+                flash.style.animation = 'flash 0.5s forwards';
+                setTimeout(() => {
+                    flash.style.animation = '';
+                }, 500);
+            }, 100);
+        }
+        
+        function captureScreenshot() {
+            // Create a new canvas at the size of the window
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            
+            canvas.width = width * 2; // Higher resolution
+            canvas.height = height * 2; // Higher resolution
+            ctx.scale(2, 2); // Scale for higher resolution
+            
+            // First, capture the background
+            const backgroundImg = new Image();
+            
+            // Get current background image URL
+            let bgUrl = document.body.style.backgroundImage;
+            if (!bgUrl) {
+                // If not set directly, get from computed style
+                bgUrl = window.getComputedStyle(document.body).backgroundImage;
+            }
+            
+            // Extract the URL from the backgroundImage CSS property
+            bgUrl = bgUrl.replace(/^url\(['"]?/, '').replace(/['"]?\)$/, '');
+            
+            backgroundImg.crossOrigin = "Anonymous";
+            backgroundImg.onload = () => {
+                // Draw the background
+                ctx.drawImage(backgroundImg, 0, 0, width, height);
+                
+                // Then capture the page elements using html2canvas
+                html2canvas(document.getElementById('scoreboard'), {
+                    backgroundColor: null,
+                    useCORS: true,
+                    scale: 1, // Already scaled the canvas
+                    allowTaint: true,
+                    logging: false
+                }).then(scoreboardCanvas => {
+                    // Draw the scoreboard on top of the background
+                    ctx.drawImage(scoreboardCanvas, 0, 0, width, height);
+                    
+                    // Show feedback
+                    const feedback = document.getElementById('screenshot-feedback');
+                    feedback.style.display = 'block';
+                    feedback.textContent = 'Screenshot saved!';
+                    
+                    // Try to share if supported
+                    canvas.toBlob(blob => {
+                        const file = new File([blob], 'slice-scoreboard.png', { type: 'image/png' });
+                        
+                        if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+                            navigator.share({
+                                title: 'SLICE! Scoreboard',
+                                files: [file]
+                            }).catch(error => {
+                                // Fallback to download if sharing fails
+                                downloadScreenshot(canvas);
+                            });
+                        } else {
+                            // Download if sharing is not supported
+                            downloadScreenshot(canvas);
+                        }
+                        
+                        // Hide feedback after 2 seconds
+                        setTimeout(() => {
+                            feedback.style.display = 'none';
+                        }, 2000);
+                    });
+                });
+            };
+            
+            backgroundImg.onerror = () => {
+                // If background image fails to load, just capture the scoreboard
+                const feedback = document.getElementById('screenshot-feedback');
+                feedback.textContent = 'Could not capture background, saving interface only.';
+                html2canvas(document.getElementById('scoreboard')).then(canvas => {
+                    // Show feedback
+                    feedback.style.display = 'block';
+                    
+                    // Share or download
+                    downloadScreenshot(canvas);
+                    
+                    // Hide feedback after 2 seconds
+                    setTimeout(() => {
+                        feedback.style.display = 'none';
+                    }, 2000);
+                });
+            };
+            
+            // Load the background image
+            backgroundImg.src = bgUrl;
+        }
+        
+        function downloadScreenshot(canvas) {
+            // Create download link
+            const link = document.createElement('a');
+            link.download = 'slice-scoreboard.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+        
+        // Add html2canvas library
+        (function() {
+            const script = document.createElement('script');
+            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+            document.head.appendChild(script);
+        })();
     </script>
 </body>
 </html>
