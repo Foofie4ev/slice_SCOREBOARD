@@ -1,4 +1,409 @@
-<!DOCTYPE html>
+<script>
+        // Game state variables
+        let greenPoints = 0;
+        let orangePoints = 0;
+        let greenGames = 0;
+        let orangeGames = 0;
+        let useDigitalDice = false;
+        
+        // Dice face definitions
+        const diceFaces = {
+            'first-serve': [3, 3, 4, 4, 5, 6, "Fault!", "Let!"],
+            'second-serve': [1, 1, 2, 2, 3, 4, "Fault!", "Let!"],
+            'volley': [7, 7, 7, 6, 6, 6, "Out!", "Net!"],
+            'drop-shot': [1, 1, 1, 2, 2, 2, "Out!", "Net!"]
+        };
+        
+        // Function to hide URL bar
+        function hideURLbar() {
+            if (window.location.hash.indexOf('#') == -1) {
+                // First try using scrollTo
+                window.scrollTo(0, 1);
+                
+                // Then try using minimal-ui for iOS
+                if (navigator.userAgent.match(/(iPad|iPhone|iPod)/g)) {
+                    document.documentElement.style.webkitAppearance = 'none';
+                    document.body.style.webkitAppearance = 'none';
+                }
+                
+                // Also set minimal-ui meta viewport for iOS
+                let metaViewport = document.querySelector('meta[name=viewport]');
+                if (metaViewport) {
+                    if (!metaViewport.content.includes('minimal-ui')) {
+                        metaViewport.content += ', minimal-ui';
+                    }
+                }
+                
+                // For some browsers, attempt to go fullscreen
+                if (document.documentElement.requestFullscreen) {
+                    document.documentElement.requestFullscreen();
+                } else if (document.documentElement.webkitRequestFullscreen) {
+                    document.documentElement.webkitRequestFullscreen();
+                } else if (document.documentElement.msRequestFullscreen) {
+                    document.documentElement.msRequestFullscreen();
+                }
+            }
+        }
+        
+        // Call hideURLbar function after page load
+        window.addEventListener('load', function() {
+            // Call hideURLbar after a slight delay
+            setTimeout(hideURLbar, 100);
+            
+            // Check if there's a saved court and apply it
+            const savedCourt = localStorage.getItem('selectedCourt');
+            if (savedCourt) {
+                document.body.style.backgroundImage = `url('https://raw.githubusercontent.com/Foofie4ev/slice_SCOREBOARD/main/${savedCourt}')`;
+            }
+            
+            // Check if digital dice preference was saved
+            const savedDiceType = localStorage.getItem('useDigitalDice');
+            if (savedDiceType !== null) {
+                useDigitalDice = savedDiceType === 'true';
+                document.getElementById('dice-container').style.display = 
+                    useDigitalDice ? 'grid' : 'none';
+            }
+            
+            // Check orientation
+            checkOrientation();
+            
+            // Set up dice click handlers
+            setupDiceHandlers();
+        });
+        
+        // Call hideURLbar again after any orientation change
+        window.addEventListener('orientationchange', function() {
+            setTimeout(hideURLbar, 100);
+        });
+        
+        window.addEventListener('resize', checkOrientation);
+        
+        // Try to do it on user interaction too (more likely to be allowed by browsers)
+        document.addEventListener('click', function() {
+            setTimeout(hideURLbar, 100);
+        });
+        
+        function checkOrientation() {
+            const rotateMessage = document.getElementById('rotate-message');
+            if (window.innerHeight > window.innerWidth) {
+                rotateMessage.style.display = 'flex';
+            } else {
+                rotateMessage.style.display = 'none';
+                // Hide URL bar again on orientation change
+                setTimeout(hideURLbar, 100);
+                
+                // Show player name modal when properly oriented
+                // Only show if names haven't been entered yet
+                if (document.getElementById('green-player-display').textContent === "") {
+                    // Make sure to use display flex for the modal
+                    const playerNameModal = document.getElementById('player-name-modal');
+                    playerNameModal.style.display = 'flex';
+                }
+            }
+        }
+
+        function getTennisScore(points) {
+            if (points >= 4) return "GAME";
+            switch (points) {
+                case 0: return "❤️";
+                case 1: return "15";
+                case 2: return "30";
+                case 3: return "40";
+                default: return "❤️";
+            }
+        }
+
+        function incrementScore(team) {
+            if (greenPoints >= 4 || orangePoints >= 4) return;
+            
+            // Visual feedback for button press (beyond CSS)
+            const buttonElement = document.querySelector(team === 'green' ? '.green-button' : '.orange-button');
+            
+            // Add additional animation class
+            buttonElement.classList.add('button-pressed');
+            
+            // Remove the class after animation completes
+            setTimeout(() => {
+                buttonElement.classList.remove('button-pressed');
+            }, 200);
+            
+            if (team === 'green') {
+                greenPoints++;
+                document.getElementById('green-score').textContent = getTennisScore(greenPoints);
+                
+                // Check if game is won
+                if (greenPoints >= 4) {
+                    greenGames++;
+                    document.getElementById('green-games').textContent = greenGames;
+                    
+                    // Celebration animation for winning a game
+                    const greenTeam = document.getElementById('green-team');
+                    greenTeam.classList.add('game-won');
+                    setTimeout(() => {
+                        greenTeam.classList.remove('game-won');
+                    }, 1000);
+                }
+            } else if (team === 'orange') {
+                orangePoints++;
+                document.getElementById('orange-score').textContent = getTennisScore(orangePoints);
+                
+                // Check if game is won
+                if (orangePoints >= 4) {
+                    orangeGames++;
+                    document.getElementById('orange-games').textContent = orangeGames;
+                    
+                    // Celebration animation for winning a game
+                    const orangeTeam = document.getElementById('orange-team');
+                    orangeTeam.classList.add('game-won');
+                    setTimeout(() => {
+                        orangeTeam.classList.remove('game-won');
+                    }, 1000);
+                }
+            }
+            
+            // Try to hide URL bar after score change
+            setTimeout(hideURLbar, 100);
+        }
+
+        function resetPoints() {
+            greenPoints = 0;
+            orangePoints = 0;
+            document.getElementById('green-score').textContent = "❤️";
+            document.getElementById('orange-score').textContent = "❤️";
+            
+            // Try to hide URL bar after reset
+            setTimeout(hideURLbar, 100);
+        }
+        
+        function resetAll() {
+            resetPoints();
+            greenGames = 0;
+            orangeGames = 0;
+            document.getElementById('green-games').textContent = "0";
+            document.getElementById('orange-games').textContent = "0";
+            
+            // Option to change court
+            if (confirm("Would you like to select a new court and dice type?")) {
+                document.getElementById('court-selection-modal').style.display = 'flex';
+            }
+            
+            // Try to hide URL bar after reset
+            setTimeout(hideURLbar, 100);
+        }
+        
+        function savePlayerNames() {
+            const greenPlayerName = document.getElementById('green-player-name').value || "Player 1";
+            const orangePlayerName = document.getElementById('orange-player-name').value || "Player 2";
+            
+            document.getElementById('green-player-display').textContent = greenPlayerName;
+            document.getElementById('orange-player-display').textContent = orangePlayerName;
+            
+            document.getElementById('player-name-modal').style.display = 'none';
+            
+            // Show court selection modal after names are submitted
+            document.getElementById('court-selection-modal').style.display = 'flex';
+        }
+        
+        function selectCourt(courtImage) {
+            // Update background image
+            document.body.style.backgroundImage = `url('https://raw.githubusercontent.com/Foofie4ev/slice_SCOREBOARD/main/${courtImage}')`;
+            
+            // Store the selected court in local storage
+            localStorage.setItem('selectedCourt', courtImage);
+            
+            // Highlight the selected court
+            const courtOptions = document.querySelectorAll('.court-option');
+            courtOptions.forEach(option => {
+                option.classList.remove('selected');
+                if (option.querySelector('img').src.includes(courtImage)) {
+                    option.classList.add('selected');
+                }
+            });
+            
+            // Close the modal after selection
+            document.getElementById('court-selection-modal').style.display = 'none';
+            
+            // Show dice type modal after court selection
+            document.getElementById('dice-type-modal').style.display = 'flex';
+        }
+        
+        // Dice Type Modal Functions
+        function selectDiceType(type) {
+            useDigitalDice = (type === 'digital');
+            
+            // Store the dice preference in local storage
+            localStorage.setItem('useDigitalDice', useDigitalDice);
+            
+            // Show or hide dice container based on selection
+            document.getElementById('dice-container').style.display = 
+                useDigitalDice ? 'grid' : 'none';
+            
+            // Close the modal
+            document.getElementById('dice-type-modal').style.display = 'none';
+        }
+        
+        // Setup dice handlers
+        function setupDiceHandlers() {
+            // First Serve Dice
+            document.querySelector('.first-serve-dice').addEventListener('click', function() {
+                rollDice('first-serve');
+            });
+            
+            // Second Serve Dice
+            document.querySelector('.second-serve-dice').addEventListener('click', function() {
+                rollDice('second-serve');
+            });
+            
+            // Volley Dice
+            document.querySelector('.volley-dice').addEventListener('click', function() {
+                rollDice('volley');
+            });
+            
+            // Drop Shot Dice
+            document.querySelector('.drop-shot-dice').addEventListener('click', function() {
+                rollDice('drop-shot');
+            });
+        }
+        
+        // Roll the dice
+        function rollDice(diceType) {
+            // Find the dice element
+            const diceElement = document.querySelector(`.${diceType}-dice`);
+            
+            // Add animation class
+            diceElement.classList.add('dice-rolling');
+            
+            // Remove the class after animation completes
+            setTimeout(() => {
+                diceElement.classList.remove('dice-rolling');
+            }, 300);
+            
+            // Get random result from dice faces
+            const faces = diceFaces[diceType];
+            const result = faces[Math.floor(Math.random() * faces.length)];
+            
+            // Get the result container and set the appropriate class
+            const resultContainer = document.getElementById('dice-result-container');
+            resultContainer.className = 'dice-result-container';
+            resultContainer.classList.add(`${diceType}-result`);
+            
+            // Show dice roll modal
+            const diceRollModal = document.getElementById('dice-roll-modal');
+            diceRollModal.style.display = 'flex';
+            
+            // Set initial state
+            const diceResult = document.getElementById('dice-result');
+            const diceLabel = document.getElementById('dice-label');
+            diceResult.textContent = '?';
+            diceLabel.textContent = 'Rolling...';
+            
+            // Add rolling animation class to result
+            diceResult.parentElement.classList.add('roll-animation');
+            
+            // After animation delay, show the result
+            setTimeout(() => {
+                // Remove animation class
+                diceResult.parentElement.classList.remove('roll-animation');
+                
+                // Display the result
+                diceResult.textContent = result;
+                
+                // Update the label
+                switch(diceType) {
+                    case 'first-serve':
+                        diceLabel.textContent = '1st Serve';
+                        break;
+                    case 'second-serve':
+                        diceLabel.textContent = '2nd Serve';
+                        break;
+                    case 'volley':
+                        diceLabel.textContent = 'Volley';
+                        break;
+                    case 'drop-shot':
+                        diceLabel.textContent = 'Drop Shot';
+                        break;
+                }
+            }, 1000); // End of animation
+        }
+        
+        // Close dice roll result
+        function closeDiceRoll() {
+            document.getElementById('dice-roll-modal').style.display = 'none';
+        }
+        
+        // Screenshot functionality
+        function takeScreenshot() {
+            // Get screenshot feedback element ready
+            const feedback = document.getElementById('screenshot-feedback');
+            feedback.style.display = 'block';
+            feedback.textContent = 'Taking screenshot...';
+            
+            // Hide flash to avoid capturing it
+            const flash = document.getElementById('screenshot-flash');
+            flash.style.opacity = 0;
+            
+            // Use the original screenshot implementation that worked correctly
+            html2canvas(document.body, {
+                useCORS: true,
+                allowTaint: true,
+                logging: false,
+                onclone: function(clonedDoc) {
+                    // Ensure any flash effect is hidden in the clone
+                    clonedDoc.getElementById('screenshot-flash').style.opacity = 0;
+                }
+            }).then(canvas => {
+                // Update feedback
+                feedback.textContent = 'Screenshot saved!';
+                
+                // Try to share if supported
+                canvas.toBlob(blob => {
+                    const file = new File([blob], 'slice-scoreboard.png', { type: 'image/png' });
+                    
+                    if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+                        navigator.share({
+                            title: 'SLICE! Scoreboard',
+                            files: [file]
+                        }).catch(error => {
+                            // Fallback to download if sharing fails
+                            downloadScreenshot(canvas);
+                        });
+                    } else {
+                        // Download if sharing is not supported
+                        downloadScreenshot(canvas);
+                    }
+                    
+                    // Show flash animation after screenshot is taken
+                    setTimeout(() => {
+                        flash.style.animation = 'flash 0.5s forwards';
+                        setTimeout(() => {
+                            flash.style.animation = '';
+                        }, 500);
+                    }, 100);
+                    
+                    // Hide feedback after 2 seconds
+                    setTimeout(() => {
+                        feedback.style.display = 'none';
+                    }, 2000);
+                });
+            });
+        }
+        
+        function downloadScreenshot(canvas) {
+            // Create download link
+            const link = document.createElement('a');
+            link.download = 'slice-scoreboard.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+        
+        // Add html2canvas library
+        (function() {
+            const script = document.createElement('script');
+            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+            document.head.appendChild(script);
+        })();
+    </script>
+            <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -127,7 +532,7 @@
             cursor: pointer;
             box-shadow: 0 3px 5px rgba(0,0,0,0.2);
             position: absolute;
-            bottom: 70px; /* Moved up to create more space */
+            bottom: 45px; /* Moved down further */
             left: 50%;
             transform: translateX(-50%);
         }
@@ -481,20 +886,20 @@
         .dice-container {
             display: none; /* Hidden by default */
             position: absolute;
-            top: 53%;
+            top: 45%; /* Moved much higher */
             left: 50%;
             transform: translateX(-50%);
             grid-template-columns: repeat(2, 1fr);
             grid-template-rows: repeat(2, 1fr);
-            gap: 15px;
-            margin-top: 20px;
+            gap: 10px; /* Reduced gap */
+            margin-top: 10px; /* Reduced top margin */
             z-index: 10;
-            width: 180px; /* Limit max width to prevent oversized buttons */
+            width: 140px; /* Reduced overall width */
         }
         
         .dice {
-            width: 70px;
-            height: 70px;
+            width: 60px; /* Smaller dice */
+            height: 60px;
             cursor: pointer;
             position: relative;
             border-radius: 8px;
@@ -504,7 +909,7 @@
             align-items: center;
             font-weight: bold;
             transition: transform 0.2s ease;
-            font-size: 0.9rem;
+            font-size: 0.8rem; /* Smaller font */
             text-align: center;
             padding: 5px;
         }
@@ -637,15 +1042,15 @@
             }
             
             .dice {
-                width: 60px;
-                height: 60px;
-                font-size: 0.75rem;
+                width: 50px; /* Even smaller on mobile */
+                height: 50px;
+                font-size: 0.7rem;
             }
             
             .dice-container {
-                width: 160px;
-                gap: 10px;
-                top: 55%;
+                width: 120px; /* Even smaller container on mobile */
+                gap: 8px;
+                top: 45%;
             }
             
             .dice-result-container {
@@ -723,7 +1128,7 @@
             }
             
             .new-match-button {
-                bottom: 80px; /* Adjusted for small screens */
+                bottom: 45px; /* Moved down for consistency with other views */
             }
             
             .team-game-count {
@@ -744,16 +1149,16 @@
             }
             
             .dice {
-                width: 45px;
-                height: 45px;
-                font-size: 0.6rem;
+                width: 40px; /* Much smaller dice for small height landscape */
+                height: 40px;
+                font-size: 0.5rem;
             }
             
             .dice-container {
-                width: 120px;
+                width: 100px; /* Smaller container */
                 gap: 8px;
-                margin-top: 20px;
-                top: 53%;
+                margin-top: 10px;
+                top: 42%; /* Higher position */
             }
             
             .dice-result-container {
@@ -839,7 +1244,7 @@
     </div>
     
     <!-- Court Selection Modal -->
-    <div id="court-selection-modal" style="display: none;">
+    <div id="court-selection-modal">
         <div class="modal-content">
             <h2>Select Your Court</h2>
             <div class="court-grid">
@@ -872,7 +1277,7 @@
     </div>
     
     <!-- Dice Type Modal -->
-    <div id="dice-type-modal" style="display: none;">
+    <div id="dice-type-modal">
         <div class="modal-content">
             <h2>Select Dice Type</h2>
             <div class="dice-option-container">
@@ -1073,7 +1478,9 @@
                 // Show player name modal when properly oriented
                 // Only show if names haven't been entered yet
                 if (document.getElementById('green-player-display').textContent === "") {
-                    setTimeout(showPlayerNameModal, 500); // Small delay to ensure rotation is complete
+                    // Make sure to use display flex for the modal
+                    const playerNameModal = document.getElementById('player-name-modal');
+                    playerNameModal.style.display = 'flex';
                 }
             }
         }
@@ -1160,66 +1567,14 @@
             
             // Option to change court
             if (confirm("Would you like to select a new court and dice type?")) {
-                showCourtSelectionModal();
+                document.getElementById('court-selection-modal').style.display = 'flex';
             }
             
             // Try to hide URL bar after reset
             setTimeout(hideURLbar, 100);
         }
         
-        // Player Name Modal Functions
-        function showPlayerNameModal() {
-            document.getElementById('player-name-modal').style.display = 'flex';
-        }
-        
-        function savePlayerNames() {
-            const greenPlayerName = document.getElementById('green-player-name').value || "Player 1";
-            const orangePlayerName = document.getElementById('orange-player-name').value || "Player 2";
-            
-            document.getElementById('green-player-display').textContent = greenPlayerName;
-            document.getElementById('orange-player-display').textContent = orangePlayerName;
-            
-            document.getElementById('player-name-modal').style.display = 'none';
-            
-            // Show court selection modal after names are submitted
-            setTimeout(showCourtSelectionModal, 300);
-        }
-        
-        // Court Selection Modal Functions
-        function showCourtSelectionModal() {
-            document.getElementById('court-selection-modal').style.display = 'flex';
-        }
-        
-        function selectCourt(courtImage) {
-            // Update background image
-            document.body.style.backgroundImage = `url('https://raw.githubusercontent.com/Foofie4ev/slice_SCOREBOARD/main/${courtImage}')`;
-            
-            // Store the selected court in local storage
-            localStorage.setItem('selectedCourt', courtImage);
-            
-            // Highlight the selected court
-            const courtOptions = document.querySelectorAll('.court-option');
-            courtOptions.forEach(option => {
-                option.classList.remove('selected');
-                if (option.querySelector('img').src.includes(courtImage)) {
-                    option.classList.add('selected');
-                }
-            });
-            
-            // Close the modal after selection
-            setTimeout(() => {
-                document.getElementById('court-selection-modal').style.display = 'none';
-                
-                // Show dice type modal after court selection
-                setTimeout(showDiceTypeModal, 300);
-            }, 500);
-        }
-        
         // Dice Type Modal Functions
-        function showDiceTypeModal() {
-            document.getElementById('dice-type-modal').style.display = 'flex';
-        }
-        
         function selectDiceType(type) {
             useDigitalDice = (type === 'digital');
             
@@ -1339,83 +1694,60 @@
         }
         
         function captureScreenshot() {
-            // Create a new canvas at the size of the window
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            const width = window.innerWidth;
-            const height = window.innerHeight;
+            // Get screenshot feedback element ready
+            const feedback = document.getElementById('screenshot-feedback');
+            feedback.style.display = 'block';
+            feedback.textContent = 'Taking screenshot...';
             
-            // Keep original aspect ratio, no squeezing
-            canvas.width = width;
-            canvas.height = height;
-            
-            // Make sure flash is not visible during capture
+            // Hide flash to avoid capturing it
             const flash = document.getElementById('screenshot-flash');
             flash.style.opacity = 0;
-            flash.style.animation = '';
             
-            // First, capture the background
-            const backgroundImg = new Image();
-            
-            // Get current background image URL
-            let bgUrl = document.body.style.backgroundImage;
-            if (!bgUrl) {
-                // If not set directly, get from computed style
-                bgUrl = window.getComputedStyle(document.body).backgroundImage;
-            }
-            
-            // Extract the URL from the backgroundImage CSS property
-            bgUrl = bgUrl.replace(/^url\(['"]?/, '').replace(/['"]?\)$/, '');
-            
-            backgroundImg.crossOrigin = "Anonymous";
-            backgroundImg.onload = () => {
-                // Draw the background with proper sizing
-                ctx.drawImage(backgroundImg, 0, 0, width, height);
+            // Use the original screenshot implementation that worked correctly
+            html2canvas(document.body, {
+                useCORS: true,
+                allowTaint: true,
+                logging: false,
+                onclone: function(clonedDoc) {
+                    // Ensure any flash effect is hidden in the clone
+                    clonedDoc.getElementById('screenshot-flash').style.opacity = 0;
+                }
+            }).then(canvas => {
+                // Update feedback
+                feedback.textContent = 'Screenshot saved!';
                 
-                // Then capture the page elements using html2canvas
-                html2canvas(document.getElementById('scoreboard'), {
-                    backgroundColor: null,
-                    useCORS: true,
-                    scale: 1,
-                    allowTaint: true,
-                    logging: false,
-                    width: width,
-                    height: height,
-                    windowWidth: width,
-                    windowHeight: height
-                }).then(scoreboardCanvas => {
-                    // Draw the scoreboard on top of the background
-                    ctx.drawImage(scoreboardCanvas, 0, 0, width, height);
+                // Try to share if supported
+                canvas.toBlob(blob => {
+                    const file = new File([blob], 'slice-scoreboard.png', { type: 'image/png' });
                     
-                    // Show feedback
-                    const feedback = document.getElementById('screenshot-feedback');
-                    feedback.style.display = 'block';
-                    feedback.textContent = 'Screenshot saved!';
-                    
-                    // Try to share if supported
-                    canvas.toBlob(blob => {
-                        const file = new File([blob], 'slice-scoreboard.png', { type: 'image/png' });
-                        
-                        if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-                            navigator.share({
-                                title: 'SLICE! Scoreboard',
-                                files: [file]
-                            }).catch(error => {
-                                // Fallback to download if sharing fails
-                                downloadScreenshot(canvas);
-                            });
-                        } else {
-                            // Download if sharing is not supported
+                    if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+                        navigator.share({
+                            title: 'SLICE! Scoreboard',
+                            files: [file]
+                        }).catch(error => {
+                            // Fallback to download if sharing fails
                             downloadScreenshot(canvas);
-                        }
-                        
-                        // Hide feedback after 2 seconds
+                        });
+                    } else {
+                        // Download if sharing is not supported
+                        downloadScreenshot(canvas);
+                    }
+                    
+                    // Show flash animation after screenshot is taken
+                    setTimeout(() => {
+                        flash.style.animation = 'flash 0.5s forwards';
                         setTimeout(() => {
-                            feedback.style.display = 'none';
-                        }, 2000);
-                    });
+                            flash.style.animation = '';
+                        }, 500);
+                    }, 100);
+                    
+                    // Hide feedback after 2 seconds
+                    setTimeout(() => {
+                        feedback.style.display = 'none';
+                    }, 2000);
                 });
-            };
+            });
+        }
             
             backgroundImg.onerror = () => {
                 // If background image fails to load, just capture the scoreboard
