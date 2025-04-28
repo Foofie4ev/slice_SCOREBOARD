@@ -333,59 +333,64 @@
         
         // Screenshot functionality
         function takeScreenshot() {
-            // Get screenshot feedback element ready
+            // Hide feedback element before taking screenshot
             const feedback = document.getElementById('screenshot-feedback');
-            feedback.style.display = 'block';
-            feedback.textContent = 'Taking screenshot...';
+            feedback.style.display = 'none';
             
             // Hide flash to avoid capturing it
             const flash = document.getElementById('screenshot-flash');
             flash.style.opacity = 0;
             
-            // Use the original screenshot implementation that worked correctly
-            html2canvas(document.body, {
-                useCORS: true,
-                allowTaint: true,
-                logging: false,
-                onclone: function(clonedDoc) {
-                    // Ensure any flash effect is hidden in the clone
-                    clonedDoc.getElementById('screenshot-flash').style.opacity = 0;
-                }
-            }).then(canvas => {
-                // Update feedback
-                feedback.textContent = 'Screenshot saved!';
-                
-                // Try to share if supported
-                canvas.toBlob(blob => {
-                    const file = new File([blob], 'slice-scoreboard.png', { type: 'image/png' });
-                    
-                    if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-                        navigator.share({
-                            title: 'SLICE! Scoreboard',
-                            files: [file]
-                        }).catch(error => {
-                            // Fallback to download if sharing fails
-                            downloadScreenshot(canvas);
-                        });
-                    } else {
-                        // Download if sharing is not supported
-                        downloadScreenshot(canvas);
+            // Small delay to ensure elements are hidden before capture
+            setTimeout(() => {
+                // Use the original screenshot implementation that worked correctly
+                html2canvas(document.body, {
+                    useCORS: true,
+                    allowTaint: true,
+                    logging: false,
+                    onclone: function(clonedDoc) {
+                        // Ensure any flash effect is hidden in the clone
+                        clonedDoc.getElementById('screenshot-flash').style.opacity = 0;
+                        // Also hide feedback in the clone
+                        clonedDoc.getElementById('screenshot-feedback').style.display = 'none';
                     }
+                }).then(canvas => {
+                    // Now show feedback AFTER screenshot is taken
+                    feedback.style.display = 'block';
+                    feedback.textContent = 'Screenshot saved!';
                     
-                    // Show flash animation after screenshot is taken
-                    setTimeout(() => {
-                        flash.style.animation = 'flash 0.5s forwards';
+                    // Try to share if supported
+                    canvas.toBlob(blob => {
+                        const file = new File([blob], 'slice-scoreboard.png', { type: 'image/png' });
+                        
+                        if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+                            navigator.share({
+                                title: 'SLICE! Scoreboard',
+                                files: [file]
+                            }).catch(error => {
+                                // Fallback to download if sharing fails
+                                downloadScreenshot(canvas);
+                            });
+                        } else {
+                            // Download if sharing is not supported
+                            downloadScreenshot(canvas);
+                        }
+                        
+                        // Show flash animation after screenshot is taken
                         setTimeout(() => {
-                            flash.style.animation = '';
-                        }, 500);
-                    }, 100);
-                    
-                    // Hide feedback after 2 seconds
-                    setTimeout(() => {
-                        feedback.style.display = 'none';
-                    }, 2000);
+                            flash.style.animation = 'flash 0.5s forwards';
+                            setTimeout(() => {
+                                flash.style.animation = '';
+                            }, 500);
+                        }, 100);
+                        
+                        // Hide feedback after 2 seconds
+                        setTimeout(() => {
+                            feedback.style.display = 'none';
+                        }, 2000);
+                    });
                 });
-            });
+            }, 50); // Small delay to ensure UI elements are hidden
         }
         
         function downloadScreenshot(canvas) {
